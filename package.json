@@ -1,5 +1,9 @@
 {
-  "dependencies": {
-    "express": "^5.2.1"
+  "name": "ugscholar",
+  "version": "1.0.0",
+  "description": "UGScholar - Adaptive learning platform for Uganda",
+  "scripts": {
+    "start": "node BACKEND/index.js",
+    "dev": "node --watch BACKEND/index.js"
   }
 }
