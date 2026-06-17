@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 function dashboardFor(role) {
   if (role === 'admin') return '/admin';
   if (role === 'teacher') return '/teacher';
+  if (role === 'parent') return '/parent';
   return '/student';
 }
 

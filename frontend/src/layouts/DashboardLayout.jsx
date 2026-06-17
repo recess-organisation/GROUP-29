@@ -15,10 +15,15 @@ const links = {
     ['Overview', '/teacher'],
     ['My Courses', '/teacher/courses'],
     ['Create Course', '/teacher/courses/create'],
+    ['Student Progress', '/teacher/students'],
   ],
   student: [
     ['Overview', '/student'],
     ['My Courses', '/student/courses'],
+  ],
+  parent: [
+    ['Overview', '/parent'],
+    ['My Children', '/parent/children'],
   ],
 };
 

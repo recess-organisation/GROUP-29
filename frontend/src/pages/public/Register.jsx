@@ -15,7 +15,9 @@ export default function Register() {
     setSubmitting(true); setError('');
     try {
       const user = await register(form);
-      navigate(user.role === 'teacher' ? '/teacher' : user.role === 'admin' ? '/admin' : '/student');
+      if (user.role === 'teacher') navigate('/teacher');
+      else if (user.role === 'parent') navigate('/parent');
+      else navigate('/student');
     } catch (apiError) {
       setError(apiError.response?.data?.message || 'Registration failed.');
     } finally { setSubmitting(false); }
@@ -31,7 +33,7 @@ export default function Register() {
             <div className="col-md-6"><label className="form-label">Full name</label><input className="form-control" value={form.full_name} onChange={e => setForm({...form, full_name: e.target.value})} required /></div>
             <div className="col-md-6"><label className="form-label">Phone</label><input className="form-control" value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} /></div>
             <div className="col-md-6"><label className="form-label">Email</label><input className="form-control" type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} required /></div>
-            <div className="col-md-6"><label className="form-label">Role</label><select className="form-select" value={form.role} onChange={e => setForm({...form, role: e.target.value})}><option value="student">Student</option><option value="teacher">Teacher/Lecturer</option></select></div>
+            <div className="col-md-6"><label className="form-label">Role</label><select className="form-select" value={form.role} onChange={e => setForm({...form, role: e.target.value})}><option value="student">Student</option><option value="teacher">Teacher/Lecturer</option><option value="parent">Parent/Guardian</option></select></div>
             <div className="col-12"><label className="form-label">Password</label><input className="form-control" type="password" value={form.password} onChange={e => setForm({...form, password: e.target.value})} required /></div>
           </div>
           <button className="btn btn-primary w-100 mt-3" disabled={submitting}>{submitting ? 'Creating account...' : 'Register'}</button>

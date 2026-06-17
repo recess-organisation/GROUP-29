@@ -20,9 +20,13 @@ import TeacherCourses from './pages/teacher/TeacherCourses';
 import CreateCourse from './pages/teacher/CreateCourse';
 import EditCourse from './pages/teacher/EditCourse';
 import ManageLessons from './pages/teacher/ManageLessons';
+import TeacherStudents from './pages/teacher/TeacherStudents';
 import StudentDashboard from './pages/student/StudentDashboard';
 import MyCourses from './pages/student/MyCourses';
 import CourseLessons from './pages/student/CourseLessons';
+import ParentDashboard from './pages/parent/ParentDashboard';
+import MyChildren from './pages/parent/MyChildren';
+import ChildProgress from './pages/parent/ChildProgress';
 
 export default function App() {
   return (
@@ -54,6 +58,7 @@ export default function App() {
               <Route path="courses/create" element={<CreateCourse />} />
               <Route path="courses/:id/edit" element={<EditCourse />} />
               <Route path="courses/:id/lessons" element={<ManageLessons />} />
+              <Route path="students" element={<TeacherStudents />} />
             </Route>
           </Route>
           <Route element={<RoleBasedRoute allowedRoles={['student']} />}>
@@ -61,6 +66,13 @@ export default function App() {
               <Route index element={<StudentDashboard />} />
               <Route path="courses" element={<MyCourses />} />
               <Route path="courses/:id/lessons" element={<CourseLessons />} />
+            </Route>
+          </Route>
+          <Route element={<RoleBasedRoute allowedRoles={['parent']} />}>
+            <Route path="/parent" element={<DashboardLayout />}>
+              <Route index element={<ParentDashboard />} />
+              <Route path="children" element={<MyChildren />} />
+              <Route path="children/:id" element={<ChildProgress />} />
             </Route>
           </Route>
         </Route>
