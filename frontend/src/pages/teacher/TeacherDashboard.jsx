@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { getTeacherCourses } from '../../services/courseService';
+import { getCourseStudents } from '../../services/enrollmentService';
 import { useAuth } from '../../context/AuthContext';
 
 export default function TeacherDashboard() {
@@ -18,7 +19,7 @@ export default function TeacherDashboard() {
         const allStudents = [];
         for (const c of r.data) {
           try {
-            const sR = await import('../../services/enrollmentService').then(m => m.getCourseStudents(c.id));
+            const sR = await getCourseStudents(c.id);
             allStudents.push(...sR.data.map(s => ({ ...s, course_title: c.title })));
           } catch (_) { /* no students yet */ }
         }
@@ -32,8 +33,8 @@ export default function TeacherDashboard() {
   if (loading) return <LoadingSpinner />;
 
   const totalStudents = courses.reduce((s, c) => s + Number(c.enrolled_students || 0), 0);
-  const totalLessons = courses.reduce((s) => s + 1, 0); // simplified
   const activeCourses = courses.filter(c => c.status === 'active');
+  const newThisWeek = students.filter(s => new Date(s.enrolled_at) > new Date(Date.now() - 7*86400000)).length;
 
   return (
     <>
@@ -42,7 +43,7 @@ export default function TeacherDashboard() {
         <div className="col-md-3"><div className="stat-card"><div className="text-muted">Courses</div><div className="h2">{courses.length}</div></div></div>
         <div className="col-md-3"><div className="stat-card"><div className="text-muted">Active courses</div><div className="h2">{activeCourses.length}</div></div></div>
         <div className="col-md-3"><div className="stat-card"><div className="text-muted">Students</div><div className="h2">{totalStudents}</div></div></div>
-        <div className="col-md-3"><div className="stat-card"><div className="text-muted">New this week</div><div className="h2">{students.filter(s => new Date(s.enrolled_at) > new Date(Date.now() - 7*86400000)).length}</div></div></div>
+        <div className="col-md-3"><div className="stat-card"><div className="text-muted">New this week</div><div className="h2">{newThisWeek}</div></div></div>
       </div>
 
       <div className="row g-3 mb-3">
