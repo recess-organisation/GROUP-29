@@ -5,3 +5,5 @@ uploads/submissions/*
 !uploads/materials/.gitkeep
 !uploads/submissions/.gitkeep
 npm-debug.log*
+vite.log
+*.log
