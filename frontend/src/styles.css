@@ -1,0 +1,18 @@
+.hero-band {
+  background: linear-gradient(135deg, #1a365d, #2b6cb0);
+  color: white;
+  padding: 4rem 0;
+}
+.page-shell { padding: 2rem 1rem; max-width: 1200px; margin: 0 auto; }
+.content-panel { background: white; border-radius: 10px; padding: 1.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
+.stat-card { background: white; border-radius: 10px; padding: 1.2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
+.stat-card .h2 { color: #2b6cb0; font-weight: bold; }
+.course-card { background: white; border-radius: 10px; padding: 1.2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.08); height: 100%; }
+.course-card h5 { color: #1a365d; }
+.badge-soft { background: #bee3f8; color: #2a4365; }
+.dashboard-shell { display: flex; min-height: calc(100vh - 56px); }
+.sidebar { width: 220px; background: #1a202c; padding: 1.5rem; flex-shrink: 0; }
+.sidebar a { display: block; color: #a0aec0; padding: 0.5rem 0.75rem; border-radius: 6px; text-decoration: none; margin-bottom: 0.25rem; font-size: 0.9rem; }
+.sidebar a:hover { background: #2d3748; color: white; }
+.sidebar a.active { background: #2b6cb0; color: white; }
+@media (max-width: 768px) { .sidebar { width: 100%; min-height: auto; } .dashboard-shell { flex-direction: column; } }
