@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UGScholar - Login</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: linear-gradient(135deg, #1a365d, #2b6cb0); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+  .box { background: white; border-radius: 12px; padding: 2.5rem; width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+  .logo { text-align: center; margin-bottom: 1.5rem; }
+  .logo h1 { font-size: 1.8rem; color: #1a365d; }
+  .logo p { color: #718096; font-size: 0.9rem; }
+  .tabs { display: flex; border-bottom: 2px solid #e2e8f0; margin-bottom: 1.5rem; }
+  .tab { flex: 1; text-align: center; padding: 0.7rem; cursor: pointer; color: #718096; font-weight: 600; transition: all 0.2s; }
+  .tab.active { color: #2b6cb0; border-bottom: 2px solid #2b6cb0; margin-bottom: -2px; }
+  .tab:hover { color: #2b6cb0; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .form-group { margin-bottom: 1rem; }
+  label { display: block; font-size: 0.85rem; color: #4a5568; margin-bottom: 0.3rem; font-weight: 600; }
+  input, select { width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 0.95rem; transition: border-color 0.2s; outline: none; }
+  input:focus, select:focus { border-color: #2b6cb0; }
+  .row { display: flex; gap: 0.75rem; }
+  .row .form-group { flex: 1; }
+  .btn { width: 100%; padding: 0.8rem; background: #2b6cb0; color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 0.3rem; }
+  .btn:hover { background: #1a365d; }
+  .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .error { color: #e53e3e; font-size: 0.85rem; margin-top: 0.5rem; text-align: center; display: none; }
+  .success { color: #38a169; font-size: 0.85rem; margin-top: 0.5rem; text-align: center; display: none; }
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="logo">
+    <h1>UGScholar</h1>
+    <p>Uganda's Adaptive Learning Platform</p>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('login')">Sign In</div>
+    <div class="tab" onclick="switchTab('signup')">Sign Up</div>
+  </div>
+
+  <div class="panel active" id="panel-login">
+    <form onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="loginEmail" placeholder="you@example.com" required>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter password" required>
+      </div>
+      <button type="submit" class="btn">Sign In</button>
+      <div class="error" id="loginError">Invalid email or password</div>
+    </form>
+  </div>
+
+  <div class="panel" id="panel-signup">
+    <form onsubmit="handleSignup(event)">
+      <div class="row">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="signupName" placeholder="John Doe" required>
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="tel" id="signupPhone" placeholder="2567XXXXXXX">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="signupEmail" placeholder="you@example.com" required>
+      </div>
+      <div class="row">
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="signupPassword" placeholder="Min 6 chars" required minlength="6">
+        </div>
+        <div class="form-group">
+          <label>Confirm Password</label>
+          <input type="password" id="signupConfirm" placeholder="Repeat password" required>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group">
+          <label>Role</label>
+          <select id="signupRole">
+            <option value="student">Student</option>
+            <option value="teacher">Teacher</option>
+            <option value="parent">Parent</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="btn" id="signupBtn">Create Account</button>
+      <div class="error" id="signupError"></div>
+      <div class="success" id="signupSuccess">Account created! You can now sign in.</div>
+    </form>
+  </div>
+</div>
+
+<script>
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelector(`.tab[onclick*="${name}"]`).classList.add('active');
+  document.getElementById(`panel-${name}`).classList.add('active');
+  document.getElementById('loginError').style.display = 'none';
+}
+
+async function handleLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+  const errorEl = document.getElementById('loginError');
+
+  const res = await fetch('/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
+
+  if (res.ok) {
+    const data = await res.json();
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    window.location.href = '/dashboard';
+  } else {
+    errorEl.textContent = 'Invalid email or password';
+    errorEl.style.display = 'block';
+  }
+}
+
+async function handleSignup(e) {
+  e.preventDefault();
+  const name = document.getElementById('signupName').value;
+  const email = document.getElementById('signupEmail').value;
+  const phone = document.getElementById('signupPhone').value;
+  const password = document.getElementById('signupPassword').value;
+  const confirm = document.getElementById('signupConfirm').value;
+  const role = document.getElementById('signupRole').value;
+  const errorEl = document.getElementById('signupError');
+  const successEl = document.getElementById('signupSuccess');
+  const btn = document.getElementById('signupBtn');
+
+  if (password !== confirm) {
+    errorEl.textContent = 'Passwords do not match';
+    errorEl.style.display = 'block';
+    successEl.style.display = 'none';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Creating account...';
+  errorEl.style.display = 'none';
+  successEl.style.display = 'none';
+
+  const res = await fetch('/api/auth/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ full_name: name, email, phone, password, role }),
+  });
+
+  btn.disabled = false;
+  btn.textContent = 'Create Account';
+
+  if (res.ok) {
+    successEl.style.display = 'block';
+    errorEl.style.display = 'none';
+    document.getElementById('signupName').value = '';
+    document.getElementById('signupEmail').value = '';
+    document.getElementById('signupPhone').value = '';
+    document.getElementById('signupPassword').value = '';
+    document.getElementById('signupConfirm').value = '';
+    setTimeout(() => switchTab('login'), 1500);
+  } else {
+    const data = await res.json();
+    errorEl.textContent = data.message || 'Registration failed';
+    errorEl.style.display = 'block';
+  }
+}
+</script>
+</body>
+</html>

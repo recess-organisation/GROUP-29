@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UGScholar Dashboard</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f4f8; color: #1a202c; }
+  .header { background: linear-gradient(135deg, #1a365d, #2b6cb0); color: white; padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+  .header h1 { font-size: 1.8rem; }
+  .header p { opacity: 0.85; }
+  .header-right { display: flex; align-items: center; gap: 1rem; }
+  .header-right span { font-size: 0.9rem; opacity: 0.9; }
+  .logout-btn { background: #e53e3e; color: white; border: none; padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .stat-card { background: white; border-radius: 10px; padding: 1.2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+  .stat-card .number { font-size: 2rem; font-weight: bold; color: #2b6cb0; }
+  .stat-card .label { color: #718096; font-size: 0.85rem; margin-top: 0.3rem; }
+  .card { background: white; border-radius: 10px; padding: 1.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 1.5rem; }
+  .card h2 { font-size: 1.2rem; margin-bottom: 1rem; color: #2d3748; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 0.6rem 0.5rem; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; }
+  th { color: #718096; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; }
+  .tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .tab { padding: 0.5rem 1rem; border: none; background: #e2e8f0; border-radius: 6px; cursor: pointer; font-size: 0.9rem; }
+  .tab.active { background: #2b6cb0; color: white; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .search-box { margin-bottom: 1rem; }
+  .search-box input { width: 100%; padding: 0.7rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; }
+  .search-box input:focus { outline: none; border-color: #2b6cb0; }
+  .badge { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 999px; font-size: 0.75rem; margin: 0.1rem; }
+  .badge-gold { background: #fefcbf; color: #744210; }
+  .badge-green { background: #c6f6d5; color: #22543d; }
+  .badge-blue { background: #bee3f8; color: #2a4365; }
+  .badge-red { background: #fed7d7; color: #9b2c2c; }
+  .ussd-test { background: #f7fafc; border: 2px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
+  .ussd-test textarea { width: 100%; height: 80px; padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 4px; font-family: monospace; font-size: 0.85rem; margin-bottom: 0.5rem; }
+  .ussd-test .response { background: #1a202c; color: #68d391; padding: 0.75rem; border-radius: 4px; font-family: monospace; font-size: 0.85rem; white-space: pre-wrap; min-height: 40px; }
+  .ussd-buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .ussd-buttons button { padding: 0.3rem 0.8rem; border: 1px solid #cbd5e0; background: white; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+  .ussd-buttons button:hover { background: #edf2f7; }
+</style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <h1>UGScholar</h1>
+    <p>Adaptive Learning Platform — Uganda</p>
+  </div>
+  <div class="header-right">
+    <span id="userDisplay"></span>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+</div>
+<div class="container">
+  <div class="stats" id="stats"></div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('leaderboard')">Leaderboard</button>
+    <button class="tab" onclick="switchTab('users')">Users</button>
+    <button class="tab" onclick="switchTab('badges')">Badges</button>
+    <button class="tab" onclick="switchTab('ussd')">USSD Simulator</button>
+    <button class="tab" onclick="switchTab('sms')">SMS Log</button>
+  </div>
+
+  <div id="tab-leaderboard" class="tab-content active">
+    <div class="card"><h2>Top Learners</h2><div id="leaderboard"><p>Loading...</p></div></div>
+  </div>
+
+  <div id="tab-users" class="tab-content">
+    <div class="card"><h2>Registered Users</h2><div id="usersList"><p>Loading...</p></div></div>
+  </div>
+
+  <div id="tab-badges" class="tab-content">
+    <div class="card"><h2>Available Badges</h2><div id="badgeList"><p>Loading...</p></div></div>
+  </div>
+
+  <div id="tab-ussd" class="tab-content">
+    <div class="card">
+      <h2>USSD Simulator</h2>
+      <div class="ussd-test">
+        <div style="margin-bottom:0.5rem"><strong>Phone:</strong> <input type="text" id="ussdPhone" value="256700000001" style="width:160px;padding:0.3rem;border:1px solid #cbd5e0;border-radius:4px"></div>
+        <div class="ussd-buttons">
+          <button onclick="ussdSend('')">Start (*285#)</button>
+          <button onclick="ussdSend('1')">1. Login</button>
+          <button onclick="ussdSend('2')">2. Learn More</button>
+          <button onclick="ussdSend('1*2020')">PIN + Age</button>
+          <button onclick="ussdSend('2')">Age: 18+</button>
+          <button onclick="ussdSend('1')">Lang: Luganda</button>
+          <button onclick="ussdSend('5')">Lang: English</button>
+          <button onclick="ussdSend('1')">Diag: answer 1</button>
+          <button onclick="ussdSend('0')">Back/Exit</button>
+        </div>
+        <div style="margin-top:0.5rem">
+          <label>Custom input: <input type="text" id="ussdInput" placeholder="e.g. 1*2020" style="width:200px;padding:0.3rem;border:1px solid #cbd5e0;border-radius:4px"></label>
+          <button onclick="ussdCustom()" style="padding:0.3rem 0.8rem">Send</button>
+        </div>
+        <div style="margin-top:0.5rem"><strong>Response:</strong></div>
+        <div class="response" id="ussdResponse">Press a button to test the USSD flow</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-sms" class="tab-content">
+    <div class="card"><h2>Recent SMS</h2><div id="smsLog"><p>Loading...</p></div></div>
+  </div>
+</div>
+
+<script>
+let ussdSession = null;
+let ussdCount = 0;
+
+function getToken() {
+  return localStorage.getItem('token');
+}
+
+function getAuthHeaders() {
+  return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() };
+}
+
+async function fetchJSON(url) {
+  const res = await fetch(url, { headers: getAuthHeaders() });
+  if (res.status === 401 || res.status === 403) { window.location.href = '/'; return null; }
+  return res.json();
+}
+
+async function loadStats() {
+  const data = await fetchJSON('/api/admin/stats');
+  if (!data) return;
+  document.getElementById('stats').innerHTML = `
+    <div class="stat-card"><div class="number">${data.totalUsers}</div><div class="label">Total Users</div></div>
+    <div class="stat-card"><div class="number">${data.totalCourses}</div><div class="label">Courses</div></div>
+    <div class="stat-card"><div class="number">${data.totalEnrollments}</div><div class="label">Enrollments</div></div>
+    <div class="stat-card"><div class="number">${data.totalLessons}</div><div class="label">Lessons</div></div>
+    <div class="stat-card"><div class="number">${data.totalDiagnostics}</div><div class="label">Diagnostics</div></div>
+    <div class="stat-card"><div class="number">${data.totalBadges}</div><div class="label">Badges</div></div>
+  `;
+}
+
+async function loadLeaderboard() {
+  const data = await fetchJSON('/api/admin/leaderboard');
+  if (!data) return;
+  if (!data.length) { document.getElementById('leaderboard').innerHTML = '<p>No learners yet</p>'; return; }
+  document.getElementById('leaderboard').innerHTML = `
+    <table>
+      <tr><th>#</th><th>Name</th><th>Phone</th><th>Points</th><th>Streak</th><th>Courses</th></tr>
+      ${data.map((u, i) => `<tr>
+        <td>${i + 1}</td>
+        <td><strong>${u.full_name}</strong></td>
+        <td>***${(u.phone || '').slice(-4)}</td>
+        <td><strong>${u.points}</strong></td>
+        <td>${u.streak} days</td>
+        <td>${u.courses_enrolled}</td>
+      </tr>`).join('')}
+    </table>
+  `;
+}
+
+async function loadUsers() {
+  const data = await fetchJSON('/api/admin/users');
+  if (!data) return;
+  if (!data.length) { document.getElementById('usersList').innerHTML = '<p>No users yet</p>'; return; }
+  document.getElementById('usersList').innerHTML = `
+    <table>
+      <tr><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Status</th><th>Joined</th></tr>
+      ${data.map(u => `<tr>
+        <td><strong>${u.full_name}</strong></td>
+        <td>${u.email}</td>
+        <td>${u.phone || '—'}</td>
+        <td><span class="badge ${u.role === 'admin' ? 'badge-gold' : u.role === 'teacher' ? 'badge-blue' : 'badge-green'}">${u.role}</span></td>
+        <td><span class="badge ${u.status === 'active' ? 'badge-green' : 'badge-red'}">${u.status}</span></td>
+        <td style="font-size:0.8rem">${new Date(u.created_at).toLocaleDateString()}</td>
+      </tr>`).join('')}
+    </table>
+    <p style="margin-top:0.5rem;color:#718096;font-size:0.85rem">Total: ${data.length} accounts</p>
+  `;
+}
+
+async function loadBadges() {
+  const data = await fetchJSON('/api/admin/badges');
+  if (!data) return;
+  document.getElementById('badgeList').innerHTML = `
+    <table>
+      <tr><th>Icon</th><th>Badge</th><th>Description</th></tr>
+      ${Object.entries(data).map(([key, b]) => `<tr>
+        <td style="font-size:1.5rem">${b.icon}</td>
+        <td><strong>${b.name}</strong></td>
+        <td>${b.description}</td>
+      </tr>`).join('')}
+    </table>
+  `;
+}
+
+async function loadSmsLog() {
+  const data = await fetchJSON('/api/admin/sms/logs');
+  if (!data) return;
+  if (!data.length) { document.getElementById('smsLog').innerHTML = '<p>No SMS yet</p>'; return; }
+  document.getElementById('smsLog').innerHTML = `
+    <table>
+      <tr><th>Time</th><th>Phone</th><th>Direction</th><th>Message</th><th>Status</th></tr>
+      ${data.map(s => `<tr>
+        <td style="font-size:0.8rem">${new Date(s.created_at).toLocaleString()}</td>
+        <td>***${(s.phone_number || '').slice(-4)}</td>
+        <td><span class="badge ${s.direction === 'outbound' ? 'badge-blue' : 'badge-green'}">${s.direction}</span></td>
+        <td style="max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.message}</td>
+        <td>${s.status}</td>
+      </tr>`).join('')}
+    </table>
+  `;
+}
+
+async function ussdSend(input) {
+  const phone = document.getElementById('ussdPhone').value || '256700000001';
+  if (!ussdSession || input === '') {
+    ussdSession = 'ussd_' + Date.now();
+    ussdCount = 0;
+  }
+  ussdCount++;
+  const text = ussdCount === 1 ? input : ussdSession + '*' + input;
+  const payload = {
+    sessionId: ussdSession,
+    serviceCode: '*285#',
+    phoneNumber: phone,
+    text: ussdCount === 1 ? input : text,
+  };
+  try {
+    const res = await fetch('/ussd', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    document.getElementById('ussdResponse').textContent = data.response || JSON.stringify(data);
+  } catch (e) {
+    document.getElementById('ussdResponse').textContent = 'Error: ' + e.message;
+  }
+}
+
+function ussdCustom() {
+  const input = document.getElementById('ussdInput').value;
+  if (input) ussdSend(input);
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.tab[onclick="switchTab('${name}')"]`).classList.add('active');
+  document.getElementById(`tab-${name}`).classList.add('active');
+}
+
+function logout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  window.location.href = '/';
+}
+
+const user = JSON.parse(localStorage.getItem('user') || '{}');
+if (user.full_name) document.getElementById('userDisplay').textContent = user.full_name;
+if (!getToken()) window.location.href = '/';
+
+loadStats();
+loadLeaderboard();
+loadUsers();
+loadBadges();
+loadSmsLog();
+</script>
+</body>
+</html>
