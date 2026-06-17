@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { getMyCourses } from '../../services/enrollmentService';
 
@@ -27,6 +28,7 @@ export default function MyCourses() {
                   <div>Progress: <div className="progress" style={{ height: 6 }}><div className="progress-bar" style={{ width: `${c.progress_percentage || 0}%` }} /></div></div>
                   <div>Points: {c.points || 0} | Streak: {c.streak || 0} days</div>
                 </div>
+                <Link className="btn btn-primary btn-sm align-self-start" to={`/student/courses/${c.id}/lessons`}>View lessons</Link>
               </div>
             </div>
           ))}

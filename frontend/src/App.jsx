@@ -7,6 +7,8 @@ import Home from './pages/public/Home';
 import About from './pages/public/About';
 import Login from './pages/public/Login';
 import Register from './pages/public/Register';
+import Courses from './pages/public/Courses';
+import CourseDetail from './pages/public/CourseDetail';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import ManageUsers from './pages/admin/ManageUsers';
 import ManageCourses from './pages/admin/ManageCourses';
@@ -20,6 +22,7 @@ import EditCourse from './pages/teacher/EditCourse';
 import ManageLessons from './pages/teacher/ManageLessons';
 import StudentDashboard from './pages/student/StudentDashboard';
 import MyCourses from './pages/student/MyCourses';
+import CourseLessons from './pages/student/CourseLessons';
 
 export default function App() {
   return (
@@ -30,6 +33,8 @@ export default function App() {
           <Route path="/about" element={<About />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/courses" element={<Courses />} />
+          <Route path="/courses/:id" element={<CourseDetail />} />
         </Route>
         <Route element={<ProtectedRoute />}>
           <Route element={<RoleBasedRoute allowedRoles={['admin']} />}>
@@ -55,6 +60,7 @@ export default function App() {
             <Route path="/student" element={<DashboardLayout />}>
               <Route index element={<StudentDashboard />} />
               <Route path="courses" element={<MyCourses />} />
+              <Route path="courses/:id/lessons" element={<CourseLessons />} />
             </Route>
           </Route>
         </Route>

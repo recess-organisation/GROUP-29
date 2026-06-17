@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { getMyCourses } from '../../services/enrollmentService';
 
@@ -32,7 +33,7 @@ export default function StudentDashboard() {
               <tbody>
                 {courses.map(c => (
                   <tr key={c.enrollment_id}>
-                    <td><strong>{c.title}</strong></td>
+                    <td><strong>{c.title}</strong><br /><Link className="small" to={`/student/courses/${c.id}/lessons`}>View lessons</Link></td>
                     <td><div className="progress" style={{ height: 8 }}><div className="progress-bar" style={{ width: `${c.progress_percentage || 0}%` }} /></div><small>{c.progress_percentage || 0}%</small></td>
                     <td>{c.points || 0}</td>
                     <td>{c.streak || 0} days</td>
