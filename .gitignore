@@ -7,3 +7,5 @@ uploads/submissions/*
 npm-debug.log*
 vite.log
 *.log
+
+vite*.err
