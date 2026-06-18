@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS token_blacklist (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  token VARCHAR(500) NOT NULL,
+  expires_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_expires (expires_at)
+);
