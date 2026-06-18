@@ -6,12 +6,14 @@ function errorHandler(err, req, res, next) {
   }
 
   if (err.message?.includes('Unsupported file type')) {
-    return res.status(400).json({ message: err.message });
+    return res.status(400).json({ message: 'Unsupported file type.' });
   }
 
   const status = err.status || 500;
   res.status(status).json({
-    message: err.message || 'An unexpected error occurred.',
+    message: status === 500 && process.env.NODE_ENV !== 'development'
+      ? 'An unexpected error occurred.'
+      : err.message || 'An unexpected error occurred.',
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
   });
 }

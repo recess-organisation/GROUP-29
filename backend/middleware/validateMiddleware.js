@@ -5,7 +5,7 @@ const schemas = {
     full_name: z.string().min(2).max(120),
     email: z.string().email(),
     phone: z.string().optional(),
-    password: z.string().min(6).max(100),
+    password: z.string().min(8).max(100),
     role: z.enum(['student', 'teacher', 'parent']).optional().default('student')
   }),
   login: z.object({

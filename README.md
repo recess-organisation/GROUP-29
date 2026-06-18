@@ -32,7 +32,7 @@ A full-stack learning management system with built-in parental controls, quiz/te
 - **Enrollment** — Students enroll in active courses; progress tracking per course
 - **Authentication** — JWT-based login with role-based route protection, rate limiting, token blacklisting
 
-## Default Accounts
+## Default Accounts (Development Only)
 
 | Role    | Email                          | Password      |
 | ------- | ------------------------------ | ------------- |
@@ -40,6 +40,8 @@ A full-stack learning management system with built-in parental controls, quiz/te
 | Teacher | grace.teacher@learnhub.test    | Password123!  |
 | Student | brian.student@learnhub.test    | Password123!  |
 | Parent  | akankwatsakevin0@gmail.com     | Password123!  |
+
+> **Warning:** These accounts exist only in the development seed data. In production, change all default passwords immediately and never commit real credentials to version control.
 
 ## Getting Started
 

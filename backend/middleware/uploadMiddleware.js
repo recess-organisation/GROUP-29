@@ -3,6 +3,18 @@ const multer = require('multer');
 
 const allowedExtensions = ['.pdf', '.doc', '.docx', '.ppt', '.pptx', '.png', '.jpg', '.jpeg', '.gif', '.txt'];
 
+const allowedMimeTypes = [
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-powerpoint',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'image/png',
+  'image/jpeg',
+  'image/gif',
+  'text/plain'
+];
+
 function createStorage(folder) {
   return multer.diskStorage({
     destination(req, file, cb) {
@@ -17,7 +29,7 @@ function createStorage(folder) {
 
 function fileFilter(req, file, cb) {
   const extension = path.extname(file.originalname).toLowerCase();
-  if (!allowedExtensions.includes(extension)) {
+  if (!allowedExtensions.includes(extension) || !allowedMimeTypes.includes(file.mimetype)) {
     return cb(new Error('Unsupported file type.'));
   }
 
