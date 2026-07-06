@@ -1,72 +1,76 @@
+<div align="center">
+
 # UG Scholar — Adaptive Learning Platform
 
-A full-stack learning management system with built-in parental controls, quiz/testing engine, assignment submission and grading, and role-based access for students, teachers, parents, and administrators.
+[![React](https://img.shields.io/badge/React%2018-61DAFB?logo=react&logoColor=000)](https://reactjs.org/)
+[![Express](https://img.shields.io/badge/Express-000000?logo=express&logoColor=fff)](https://expressjs.com/)
+[![MySQL](https://img.shields.io/badge/MySQL%208.0-4479A1?logo=mysql&logoColor=fff)](https://www.mysql.com/)
+[![Bootstrap](https://img.shields.io/badge/Bootstrap%205-7952B3?logo=bootstrap&logoColor=fff)](https://getbootstrap.com/)
+[![JWT](https://img.shields.io/badge/JWT-000000?logo=jsonwebtokens)](https://jwt.io/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-## Tech Stack
+A full-stack **Learning Management System** with built-in parental controls, quiz/testing engine, assignment submission and grading, and role-based access for students, teachers, parents, and administrators.
 
-| Layer  | Technology                     |
-| ------ | ------------------------------ |
-| Frontend | React 18, Vite 8, Bootstrap 5, React Router 6 |
-| Backend  | Node.js, Express, JWT authentication |
-| Database | MySQL 8.0 (local)             |
-| Storage  | Local filesystem via Multer    |
+</div>
+
+---
+
+## Roles
+
+| Role | Capabilities |
+|------|-------------|
+| **Admin** | Manage users, courses, categories; platform oversight |
+| **Teacher** | Create/edit courses, lessons, assignments, quizzes; upload materials; grade submissions |
+| **Student** | Browse/enroll in courses; view lessons; submit assignments; take quizzes |
+| **Parent** | Link children, set time-based & daily-usage rules, view activity logs |
 
 ## Features
 
-### Roles
-
-| Role      | Capabilities |
-| --------- | ------------ |
-| **Admin** | Manage users, courses, categories; platform oversight |
-| **Teacher** | Create/edit courses, lessons, assignments, quizzes; upload lesson materials; grade student submissions |
-| **Student** | Browse and enroll in courses; view lessons and download materials; submit assignments; take quizzes and view results |
-| **Parent** | Link children, set time-based and daily-usage rules, view activity logs and dashboards |
-
 ### Core Modules
 
-- **Course Management** — Teachers create courses with categories, levels, durations
-- **Lesson System** — Per-course lessons with order, content, and file attachments (PDF, DOC, PPT, images)
+- **Course Management** — Courses with categories, levels, and durations
+- **Lesson System** — Per-course lessons with ordering, content, and file attachments (PDF, DOC, PPT, images)
 - **Assignment Workflow** — Teachers create assignments with due dates and max marks; students upload files; teachers grade with marks and feedback
-- **Quiz Engine** — Teachers build quizzes with MCQ and True/False questions; students take timed/multi-attempt quizzes with auto-grading and answer review
-- **Parental Controls** — Built-in (replaces Allow2). Parents define rules per child: day-of-week time windows (allow/block), daily minute caps, per-activity filtering (GENERAL, LESSON, QUIZ)
-- **Enrollment** — Students enroll in active courses; progress tracking per course
-- **Authentication** — JWT-based login with role-based route protection, rate limiting, token blacklisting
+- **Quiz Engine** — MCQ and True/False questions; timed/multi-attempt quizzes with auto-grading and answer review
+- **Parental Controls** — Day-of-week time windows (allow/block), daily minute caps, per-activity filtering (GENERAL, LESSON, QUIZ)
+- **Enrollment** — Students enroll in active courses with progress tracking
+- **Authentication** — JWT-based login with role-based route protection, rate limiting, and token blacklisting
 
-## Default Accounts (Development Only)
+## Tech Stack
 
-| Role    | Email                          | Password      |
-| ------- | ------------------------------ | ------------- |
-| Admin   | admin@learnhub.test            | Password123!  |
-| Teacher | grace.teacher@learnhub.test    | Password123!  |
-| Student | brian.student@learnhub.test    | Password123!  |
-| Parent  | akankwatsakevin0@gmail.com     | Password123!  |
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React 18, Vite 8, Bootstrap 5, React Router 6 |
+| Backend | Node.js, Express, JWT authentication |
+| Database | MySQL 8.0 |
+| Storage | Local filesystem via Multer |
 
-> **Warning:** These accounts exist only in the development seed data. In production, change all default passwords immediately and never commit real credentials to version control.
-
-## Getting Started
-
-### Prerequisites
+## Prerequisites
 
 - Node.js 20+
 - MySQL 8.0
 
-### Setup
+## Getting Started
 
 ```bash
-# 1. Create the database and run migrations
+# 1. Clone
+git clone https://github.com/akankwatsakevin0-ctrl/UG_Scholar_AdaptiveLearning_platform.git
+cd UG_Scholar_AdaptiveLearning_platform
+
+# 2. Set up database
 cd backend
 mysql -u root -p < database/schema.sql
 mysql -u root -p < database/seed.sql
 node migrations/migrate.js
 
-# 2. Install backend dependencies
+# 3. Install backend dependencies
 npm install
 
-# 3. Configure environment
+# 4. Configure environment
 cp .env.example .env
-# Edit .env with your DB credentials (defaults: root/root on localhost:3306)
+# Edit .env with your MySQL credentials
 
-# 4. Install frontend dependencies
+# 5. Install frontend dependencies
 cd ../frontend
 npm install
 ```
@@ -83,21 +87,32 @@ cd frontend
 npx vite --host
 ```
 
-Then open `http://localhost:5173` in your browser.
+Open **http://localhost:5173** in your browser.
+
+## Default Accounts (Development Only)
+
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | admin@learnhub.test | Password123! |
+| Teacher | grace.teacher@learnhub.test | Password123! |
+| Student | brian.student@learnhub.test | Password123! |
+| Parent | akankwatsakevin0@gmail.com | Password123! |
+
+> **Warning:** Default credentials are for development only. Change all passwords and never commit real credentials to version control for production use.
 
 ## API Overview
 
-| Prefix              | Auth Required | Purpose            |
-| ------------------- | ------------- | ------------------ |
-| `POST /api/auth`    | No            | Login/register     |
-| `GET /api/courses`  | No            | Public course list |
-| `/api/enrollments`  | Yes           | Student enrollment |
-| `/api/assignments`  | Yes           | Assignment CRUD    |
-| `/api/submissions`  | Yes           | Submit and grade   |
-| `/api/lessons`      | Yes           | Lesson CRUD + materials |
-| `/api/quizzes`      | Yes           | Quiz engine        |
-| `/api/parent`       | Parent        | Rules and usage    |
-| `/api/admin`        | Admin         | User/course mgmt   |
+| Prefix | Auth | Purpose |
+|--------|------|---------|
+| `POST /api/auth` | No | Login/register |
+| `GET /api/courses` | No | Public course list |
+| `/api/enrollments` | Yes | Student enrollment |
+| `/api/assignments` | Yes | Assignment CRUD |
+| `/api/submissions` | Yes | Submit and grade |
+| `/api/lessons` | Yes | Lesson CRUD + materials |
+| `/api/quizzes` | Yes | Quiz engine |
+| `/api/parent` | Parent | Rules and usage |
+| `/api/admin` | Admin | User/course management |
 
 ## Project Structure
 
@@ -135,9 +150,13 @@ UG_Scholar/
 
 ## Color Palette
 
-| Usage          | Color  |
-| -------------- | ------ |
-| Backgrounds    | #FFFFFF, #F8F9FA |
-| Text & Sidebar | #1E293B, #0F172A |
-| Accent (coral) | #FF6B6B |
-| Accent (teal)  | #0D9488 |
+| Usage | Color |
+|-------|-------|
+| Backgrounds | `#FFFFFF`, `#F8F9FA` |
+| Text & Sidebar | `#1E293B`, `#0F172A` |
+| Accent (coral) | `#FF6B6B` |
+| Accent (teal) | `#0D9488` |
+
+---
+
+<div align="center">Built with React, Express, and MySQL</div>
