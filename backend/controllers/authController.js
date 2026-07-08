@@ -53,7 +53,7 @@ async function register(req, res) {
 
     return res.status(201).json({ message: 'Account created successfully.', token, user: users[0] });
   } catch (error) {
-    return res.status(500).json({ message: 'Registration failed.', error: error.message });
+    return res.status(500).json({ message: 'Registration failed.' });
   }
 }
 
@@ -84,7 +84,7 @@ async function login(req, res) {
     const token = createToken(user);
     return res.json({ message: 'Login successful.', token, user });
   } catch (error) {
-    return res.status(500).json({ message: 'Login failed.', error: error.message });
+    return res.status(500).json({ message: 'Login failed.' });
   }
 }
 
@@ -107,7 +107,7 @@ async function logout(req, res) {
 
     return res.json({ message: 'Logged out successfully.' });
   } catch (error) {
-    return res.status(500).json({ message: 'Logout failed.', error: error.message });
+    return res.status(500).json({ message: 'Logout failed.' });
   }
 }
 
@@ -124,7 +124,7 @@ async function me(req, res) {
 
     return res.json(users[0]);
   } catch (error) {
-    return res.status(500).json({ message: 'Could not load profile.', error: error.message });
+    return res.status(500).json({ message: 'Could not load profile.' });
   }
 }
 
@@ -169,7 +169,7 @@ async function forgotPassword(req, res) {
 
     return res.json({ message: 'If that email is registered, a password reset link has been sent.' });
   } catch (error) {
-    return res.status(500).json({ message: 'Could not process request.', error: error.message });
+    return res.status(500).json({ message: 'Could not process request.' });
   }
 }
 
@@ -202,7 +202,7 @@ async function resetPassword(req, res) {
 
     return res.json({ message: 'Password reset successful. You can now log in with your new password.' });
   } catch (error) {
-    return res.status(500).json({ message: 'Could not reset password.', error: error.message });
+    return res.status(500).json({ message: 'Could not reset password.' });
   }
 }
 

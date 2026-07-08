@@ -18,7 +18,7 @@ async function getQuizzesByLesson(req, res) {
     }
     return res.json(quizzes);
   } catch (error) {
-    return res.status(500).json({ message: 'Could not load quizzes.', error: error.message });
+    return res.status(500).json({ message: 'Could not load quizzes.' });
   }
 }
 
@@ -28,7 +28,7 @@ async function getQuizForEdit(req, res) {
     if (!quiz) return res.status(404).json({ message: 'Quiz not found.' });
     return res.json(quiz);
   } catch (error) {
-    return res.status(500).json({ message: 'Could not load quiz.', error: error.message });
+    return res.status(500).json({ message: 'Could not load quiz.' });
   }
 }
 
@@ -46,7 +46,7 @@ async function createQuiz(req, res) {
 
     return res.status(201).json({ message: 'Quiz created.', quizId: result.insertId });
   } catch (error) {
-    return res.status(500).json({ message: 'Could not create quiz.', error: error.message });
+    return res.status(500).json({ message: 'Could not create quiz.' });
   }
 }
 
@@ -59,7 +59,7 @@ async function updateQuiz(req, res) {
     );
     return res.json({ message: 'Quiz updated.' });
   } catch (error) {
-    return res.status(500).json({ message: 'Could not update quiz.', error: error.message });
+    return res.status(500).json({ message: 'Could not update quiz.' });
   }
 }
 
@@ -68,7 +68,7 @@ async function deleteQuiz(req, res) {
     await db.query('DELETE FROM quizzes WHERE id = ?', [req.params.id]);
     return res.json({ message: 'Quiz deleted.' });
   } catch (error) {
-    return res.status(500).json({ message: 'Could not delete quiz.', error: error.message });
+    return res.status(500).json({ message: 'Could not delete quiz.' });
   }
 }
 
@@ -100,7 +100,7 @@ async function saveQuestions(req, res) {
 
     return res.json({ message: 'Questions saved.' });
   } catch (error) {
-    return res.status(500).json({ message: 'Could not save questions.', error: error.message });
+    return res.status(500).json({ message: 'Could not save questions.' });
   }
 }
 
@@ -132,7 +132,7 @@ async function getQuizForTaking(req, res) {
 
     return res.json(quiz);
   } catch (error) {
-    return res.status(500).json({ message: 'Could not load quiz.', error: error.message });
+    return res.status(500).json({ message: 'Could not load quiz.' });
   }
 }
 
@@ -159,7 +159,7 @@ async function startAttempt(req, res) {
 
     return res.status(201).json({ message: 'Attempt started.', attemptId: result.insertId });
   } catch (error) {
-    return res.status(500).json({ message: 'Could not start attempt.', error: error.message });
+    return res.status(500).json({ message: 'Could not start attempt.' });
   }
 }
 
@@ -184,7 +184,7 @@ async function submitAttempt(req, res) {
     const result = await quizService.gradeAttempt(attemptId, answers || {});
     return res.json(result);
   } catch (error) {
-    return res.status(500).json({ message: 'Could not submit attempt.', error: error.message });
+    return res.status(500).json({ message: 'Could not submit attempt.' });
   }
 }
 
@@ -195,7 +195,7 @@ async function getAttemptResult(req, res) {
     if (!attempt) return res.status(404).json({ message: 'Attempt not found.' });
     return res.json(attempt);
   } catch (error) {
-    return res.status(500).json({ message: 'Could not load result.', error: error.message });
+    return res.status(500).json({ message: 'Could not load result.' });
   }
 }
 
@@ -208,7 +208,7 @@ async function getMyQuizAttempts(req, res) {
     );
     return res.json(attempts);
   } catch (error) {
-    return res.status(500).json({ message: 'Could not load attempts.', error: error.message });
+    return res.status(500).json({ message: 'Could not load attempts.' });
   }
 }
 

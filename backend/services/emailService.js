@@ -12,6 +12,17 @@ const nodemailer = require('nodemailer');
  *   await emailService.sendPasswordResetEmail(user.email, token);
  */
 
+// ── HTML escaping ────────────────────────────────────────────────────────────
+function escapeHtml(str) {
+  if (typeof str !== 'string') return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 // ── Transporter ──────────────────────────────────────────────────────────────
 function createTransport() {
   if (process.env.NODE_ENV === 'production' && process.env.EMAIL_HOST) {
@@ -74,6 +85,7 @@ async function sendPasswordResetEmail(toEmail, resetToken) {
 
 /** Send a welcome email after registration */
 async function sendWelcomeEmail(toEmail, fullName) {
+  const safeName = escapeHtml(fullName);
   const text = `Welcome to UG Scholar, ${fullName}!\n\nYou've successfully created an account. You can now browse courses, enroll, and start learning.\n\nGet started: ${appUrl()}/courses`;
 
   return transporter.sendMail({
@@ -83,7 +95,7 @@ async function sendWelcomeEmail(toEmail, fullName) {
     text,
     html: `<div style="font-family:sans-serif;max-width:480px;margin:0 auto;">
       <h2 style="color:#FF6B6B;">Welcome to UG Scholar!</h2>
-      <p>Hi ${fullName},</p>
+      <p>Hi ${safeName},</p>
       <p>You've successfully created your account. You can now browse courses, enroll, and start learning.</p>
       <p><a href="${appUrl()}/courses" style="display:inline-block;background:#FF6B6B;color:#fff;padding:10px 24px;border-radius:6px;text-decoration:none;">Browse courses</a></p>
     </div>`
@@ -92,6 +104,8 @@ async function sendWelcomeEmail(toEmail, fullName) {
 
 /** Send a notification when a submission has been graded */
 async function sendGradedNotification(toEmail, assignmentTitle, marksAwarded, totalMarks, feedback) {
+  const safeTitle = escapeHtml(assignmentTitle);
+  const safeFeedback = escapeHtml(feedback || 'No feedback provided.');
   const text = `Your submission for "${assignmentTitle}" has been graded.\n\nMarks: ${marksAwarded} / ${totalMarks}\nFeedback: ${feedback || 'No feedback provided.'}`;
 
   return transporter.sendMail({
@@ -101,9 +115,9 @@ async function sendGradedNotification(toEmail, assignmentTitle, marksAwarded, to
     text,
     html: `<div style="font-family:sans-serif;max-width:480px;margin:0 auto;">
       <h2 style="color:#FF6B6B;">Assignment Graded</h2>
-      <p><strong>${assignmentTitle}</strong></p>
+      <p><strong>${safeTitle}</strong></p>
       <p>Marks: <strong>${marksAwarded}</strong> / ${totalMarks}</p>
-      ${feedback ? `<p>Feedback: ${feedback}</p>` : ''}
+      ${feedback ? `<p>Feedback: ${safeFeedback}</p>` : ''}
       <p><a href="${appUrl()}/student/grades" style="display:inline-block;background:#FF6B6B;color:#fff;padding:10px 24px;border-radius:6px;text-decoration:none;">View grades</a></p>
     </div>`
   });

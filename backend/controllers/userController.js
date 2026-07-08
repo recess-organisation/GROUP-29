@@ -14,7 +14,7 @@ async function getProfile(req, res) {
 
     return res.json(users[0]);
   } catch (error) {
-    return res.status(500).json({ message: 'Could not load profile.', error: error.message });
+    return res.status(500).json({ message: 'Could not load profile.' });
   }
 }
 
@@ -29,7 +29,7 @@ async function updateProfile(req, res) {
     await db.query('UPDATE users SET full_name = ?, phone = ? WHERE id = ?', [full_name, phone || null, req.user.id]);
     return getProfile(req, res);
   } catch (error) {
-    return res.status(500).json({ message: 'Could not update profile.', error: error.message });
+    return res.status(500).json({ message: 'Could not update profile.' });
   }
 }
 
@@ -60,7 +60,7 @@ async function changePassword(req, res) {
 
     return res.json({ message: 'Password changed successfully.' });
   } catch (error) {
-    return res.status(500).json({ message: 'Could not change password.', error: error.message });
+    return res.status(500).json({ message: 'Could not change password.' });
   }
 }
 

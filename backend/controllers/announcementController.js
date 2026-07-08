@@ -16,7 +16,7 @@ async function getAnnouncementsByCourse(req, res) {
 
     return res.json(announcements);
   } catch (error) {
-    return res.status(500).json({ message: 'Could not load announcements.', error: error.message });
+    return res.status(500).json({ message: 'Could not load announcements.' });
   }
 }
 
@@ -45,7 +45,7 @@ async function createAnnouncement(req, res) {
 
     return res.status(201).json({ message: 'Announcement created.', announcement_id: result.insertId });
   } catch (error) {
-    return res.status(500).json({ message: 'Could not create announcement.', error: error.message });
+    return res.status(500).json({ message: 'Could not create announcement.' });
   }
 }
 
@@ -64,7 +64,7 @@ async function deleteAnnouncement(req, res) {
     await db.query('DELETE FROM announcements WHERE id = ?', [req.params.id]);
     return res.json({ message: 'Announcement deleted.' });
   } catch (error) {
-    return res.status(500).json({ message: 'Could not delete announcement.', error: error.message });
+    return res.status(500).json({ message: 'Could not delete announcement.' });
   }
 }
 

@@ -39,7 +39,7 @@ async function submitAssignment(req, res) {
 
     return res.status(201).json({ message: 'Assignment submitted.', submission_id: result.insertId });
   } catch (error) {
-    return res.status(500).json({ message: 'Could not submit assignment.', error: error.message });
+    return res.status(500).json({ message: 'Could not submit assignment.' });
   }
 }
 
@@ -56,7 +56,7 @@ async function getMySubmissions(req, res) {
     );
     return res.json(submissions);
   } catch (error) {
-    return res.status(500).json({ message: 'Could not load submissions.', error: error.message });
+    return res.status(500).json({ message: 'Could not load submissions.' });
   }
 }
 
@@ -82,7 +82,7 @@ async function getSubmissionsForAssignment(req, res) {
     );
     return res.json(submissions);
   } catch (error) {
-    return res.status(500).json({ message: 'Could not load assignment submissions.', error: error.message });
+    return res.status(500).json({ message: 'Could not load assignment submissions.' });
   }
 }
 
@@ -125,7 +125,7 @@ async function gradeSubmission(req, res) {
 
     return res.json({ message: 'Submission graded.' });
   } catch (error) {
-    return res.status(500).json({ message: 'Could not grade submission.', error: error.message });
+    return res.status(500).json({ message: 'Could not grade submission.' });
   }
 }
 

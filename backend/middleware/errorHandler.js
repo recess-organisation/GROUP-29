@@ -11,10 +11,9 @@ function errorHandler(err, req, res, next) {
 
   const status = err.status || 500;
   res.status(status).json({
-    message: status === 500 && process.env.NODE_ENV !== 'development'
+    message: status === 500
       ? 'An unexpected error occurred.'
-      : err.message || 'An unexpected error occurred.',
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+      : err.message || 'An unexpected error occurred.'
   });
 }
 

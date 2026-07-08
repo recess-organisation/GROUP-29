@@ -63,7 +63,7 @@ app.options('*', cors(corsOptions));
 app.post('/api/subscriptions/webhook', express.raw({ type: 'application/json' }), subscriptionController.stripeWebhook);
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -78,7 +78,13 @@ app.use('/api/lessons', lessonRoutes);
 app.use('/api/enrollments', enrollmentRoutes);
 app.use('/api/assignments', assignmentRoutes);
 app.use('/api/submissions', submissionRoutes);
-app.use('/api/admin', adminRoutes);
+const adminLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: { message: 'Too many requests. Please try again later.' }
+});
+
+app.use('/api/admin', adminLimiter, adminRoutes);
 app.use('/api/parent', parentRoutes);
 app.use('/api/quizzes', quizRoutes);
 app.use('/api/announcements', announcementRoutes);

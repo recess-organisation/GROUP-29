@@ -55,7 +55,7 @@ async function createLesson(req, res) {
 
     return res.status(201).json({ message: 'Lesson created.', lesson_id: result.insertId });
   } catch (error) {
-    return res.status(500).json({ message: 'Could not create lesson.', error: error.message });
+    return res.status(500).json({ message: 'Could not create lesson.' });
   }
 }
 
@@ -81,7 +81,7 @@ async function getLessonsByCourse(req, res) {
 
     return res.json(lessons);
   } catch (error) {
-    return res.status(500).json({ message: 'Could not load lessons.', error: error.message });
+    return res.status(500).json({ message: 'Could not load lessons.' });
   }
 }
 
@@ -100,7 +100,7 @@ async function getLessonById(req, res) {
     lessons[0].materials = await db.query('SELECT * FROM lesson_materials WHERE lesson_id = ?', [req.params.id]);
     return res.json(lessons[0]);
   } catch (error) {
-    return res.status(500).json({ message: 'Could not load lesson.', error: error.message });
+    return res.status(500).json({ message: 'Could not load lesson.' });
   }
 }
 
@@ -125,7 +125,7 @@ async function updateLesson(req, res) {
 
     return res.json({ message: 'Lesson updated.' });
   } catch (error) {
-    return res.status(500).json({ message: 'Could not update lesson.', error: error.message });
+    return res.status(500).json({ message: 'Could not update lesson.' });
   }
 }
 
@@ -144,7 +144,7 @@ async function deleteLesson(req, res) {
     await db.query('UPDATE lessons SET status = ? WHERE id = ?', ['inactive', req.params.id]);
     return res.json({ message: 'Lesson deactivated.' });
   } catch (error) {
-    return res.status(500).json({ message: 'Could not delete lesson.', error: error.message });
+    return res.status(500).json({ message: 'Could not delete lesson.' });
   }
 }
 
