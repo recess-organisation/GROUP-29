@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import AlertMessage from '../../components/AlertMessage';
+import AnnouncementsList from '../../components/AnnouncementsList';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { useAuth } from '../../context/AuthContext';
 import { getCourse } from '../../services/courseService';
@@ -56,6 +57,11 @@ export default function CourseDetails() {
         ) : (
           <Link className="btn btn-primary" to={user ? `/${user.role}` : '/login'}>{user ? 'Go to dashboard' : 'Login to enroll'}</Link>
         )}
+      </div>
+
+      {/* Course announcements */}
+      <div className="content-panel mt-3">
+        <AnnouncementsList courseId={id} canManage={user?.role === 'admin' || user?.role === 'teacher'} />
       </div>
     </main>
   );

@@ -1,4 +1,5 @@
 const db = require('../config/db');
+const subscriptionService = require('../services/subscriptionService');
 const { findCourse, canManageCourse } = require('./courseController');
 
 async function enrollInCourse(req, res) {
@@ -6,6 +7,16 @@ async function enrollInCourse(req, res) {
     const course = await findCourse(req.params.courseId);
     if (!course || course.status !== 'active') {
       return res.status(404).json({ message: 'Active course not found.' });
+    }
+
+    // Premium check: free students are limited in how many courses they can enroll in
+    const canEnroll = await subscriptionService.canEnrollInMore(req.user.id);
+    if (!canEnroll) {
+      return res.status(403).json({
+        message: 'Free plan limited to 3 enrollments. Upgrade to Plus for unlimited enrollments.',
+        code: 'LIMIT_REACHED',
+        upgradePlan: 'plus'
+      });
     }
 
     const existing = await db.query(

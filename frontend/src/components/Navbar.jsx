@@ -30,12 +30,14 @@ export default function Navbar() {
           <div className="navbar-nav me-auto">
             <NavLink className="nav-link" to="/courses" onClick={() => setMenuOpen(false)}>Courses</NavLink>
             <NavLink className="nav-link" to="/about" onClick={() => setMenuOpen(false)}>About</NavLink>
+            <NavLink className="nav-link" to="/pricing" onClick={() => setMenuOpen(false)}>Pricing</NavLink>
             {user && <NavLink className="nav-link" to={dashboardPath(user.role)} onClick={() => setMenuOpen(false)}>Dashboard</NavLink>}
           </div>
           <div className="navbar-nav">
             {user ? (
               <>
                 <span className="navbar-text">{user.full_name}</span>
+                <NavLink className="nav-link" to="/profile" onClick={() => setMenuOpen(false)}>Profile</NavLink>
                 <button className="btn-light" onClick={handleLogout}>Logout</button>
               </>
             ) : (

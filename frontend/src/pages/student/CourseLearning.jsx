@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import AlertMessage from '../../components/AlertMessage';
+import AnnouncementsList from '../../components/AnnouncementsList';
 import LessonList from '../../components/LessonList';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { getCourse } from '../../services/courseService';
@@ -58,6 +59,10 @@ export default function CourseLearning() {
       <div className="content-panel">
         <h2 className="h5">Lessons and materials</h2>
         <LessonList lessons={lessons} />
+      </div>
+
+      <div className="content-panel mt-3">
+        <AnnouncementsList courseId={id} />
       </div>
     </>
   );

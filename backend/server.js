@@ -2,6 +2,7 @@ const path = require('path');
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
+const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
@@ -15,6 +16,9 @@ const submissionRoutes = require('./routes/submissionRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const parentRoutes = require('./routes/parentRoutes');
 const quizRoutes = require('./routes/quizRoutes');
+const announcementRoutes = require('./routes/announcementRoutes');
+const subscriptionRoutes = require('./routes/subscriptionRoutes');
+const subscriptionController = require('./controllers/subscriptionController');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -30,9 +34,12 @@ const allowedOrigins = (process.env.CORS_ORIGINS || process.env.FRONTEND_URL || 
   .map((origin) => origin.trim())
   .filter(Boolean);
 
+// Also allow any localhost or 127.0.0.1 origin regardless of port
+const localhostRegex = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
+
 const corsOptions = {
   origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.includes(origin) || localhostRegex.test(origin)) {
       return callback(null, true);
     }
     return callback(new Error(`CORS blocked request from origin: ${origin}`));
@@ -47,9 +54,14 @@ const authLimiter = rateLimit({
   message: { message: 'Too many requests. Please try again later.' }
 });
 
+app.use(morgan('dev'));
 app.use(helmet());
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
+
+// Stripe webhook needs raw body — register before express.json()
+app.post('/api/subscriptions/webhook', express.raw({ type: 'application/json' }), subscriptionController.stripeWebhook);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -69,6 +81,8 @@ app.use('/api/submissions', submissionRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/parent', parentRoutes);
 app.use('/api/quizzes', quizRoutes);
+app.use('/api/announcements', announcementRoutes);
+app.use('/api/subscriptions', subscriptionRoutes);
 
 app.use(errorHandler);
 

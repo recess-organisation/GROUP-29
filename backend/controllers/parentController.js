@@ -1,5 +1,6 @@
 const db = require('../config/db');
 const parentalControlService = require('../services/parentalControlService');
+const subscriptionService = require('../services/subscriptionService');
 
 async function getDashboard(req, res) {
   try {
@@ -105,6 +106,16 @@ async function createRule(req, res) {
     );
     if (parentCheck.length === 0) {
       return res.status(403).json({ message: 'You can only create rules for your own children.' });
+    }
+
+    // Premium check: free parents are limited in how many rules they can create per child
+    const canCreate = await subscriptionService.canCreateMoreParentalRules(req.user.id, child_id);
+    if (!canCreate) {
+      return res.status(403).json({
+        message: 'Free plan limited to 2 parental rules per child. Upgrade to Plus for unlimited rules.',
+        code: 'LIMIT_REACHED',
+        upgradePlan: 'plus'
+      });
     }
 
     const id = await parentalControlService.createRule({

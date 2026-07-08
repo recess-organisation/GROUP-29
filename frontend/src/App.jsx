@@ -9,6 +9,11 @@ import BrowseCourses from './pages/public/BrowseCourses';
 import CourseDetails from './pages/public/CourseDetails';
 import Login from './pages/public/Login';
 import Register from './pages/public/Register';
+import ForgotPassword from './pages/public/ForgotPassword';
+import ResetPassword from './pages/public/ResetPassword';
+import Pricing from './pages/public/Pricing';
+import Profile from './pages/Profile';
+import SubscriptionManage from './pages/SubscriptionManage';
 import TeacherDashboard from './pages/teacher/TeacherDashboard';
 import TeacherCourses from './pages/teacher/TeacherCourses';
 import CreateCourse from './pages/teacher/CreateCourse';
@@ -32,6 +37,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import ManageUsers from './pages/admin/ManageUsers';
 import ManageCourses from './pages/admin/ManageCourses';
 import ManageCategories from './pages/admin/ManageCategories';
+import ManageSubscriptions from './pages/admin/ManageSubscriptions';
 import ParentDashboard from './pages/parent/ParentDashboard';
 import ChildActivity from './pages/parent/ChildActivity';
 
@@ -47,9 +53,14 @@ export default function App() {
           <Route path="/courses/:id" element={<CourseDetails />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/pricing" element={<Pricing />} />
         </Route>
 
         <Route element={<ProtectedRoute />}>
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/subscription" element={<SubscriptionManage />} />
           <Route element={<RoleBasedRoute allowedRoles={['teacher']} />}>
             <Route path="/teacher" element={<DashboardLayout />}>
               <Route index element={<TeacherDashboard />} />
@@ -93,6 +104,7 @@ export default function App() {
               <Route path="users" element={<ManageUsers />} />
               <Route path="courses" element={<ManageCourses />} />
               <Route path="categories" element={<ManageCategories />} />
+              <Route path="subscriptions" element={<ManageSubscriptions />} />
             </Route>
           </Route>
         </Route>

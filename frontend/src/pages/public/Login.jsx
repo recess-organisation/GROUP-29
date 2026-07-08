@@ -17,6 +17,7 @@ export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const successMessage = location.state?.message || '';
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -37,6 +38,7 @@ export default function Login() {
     <main className="page-shell">
       <div className="content-panel mx-auto" style={{ maxWidth: 480 }}>
         <h1 className="h3">Login</h1>
+        <AlertMessage type="success" message={successMessage} />
         <AlertMessage type="danger" message={error} />
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
@@ -48,6 +50,9 @@ export default function Login() {
             <input className="form-control" type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required />
           </div>
           <button className="btn btn-primary w-100" disabled={submitting}>{submitting ? 'Signing in...' : 'Login'}</button>
+          <div className="text-center mt-2">
+            <Link to="/forgot-password" className="small text-muted">Forgot password?</Link>
+          </div>
         </form>
         <p className="mt-3 mb-0 text-center">New here? <Link to="/register">Create an account</Link></p>
       </div>

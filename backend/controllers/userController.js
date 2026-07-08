@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const db = require('../config/db');
 
 async function getProfile(req, res) {
@@ -32,7 +33,39 @@ async function updateProfile(req, res) {
   }
 }
 
+async function changePassword(req, res) {
+  try {
+    const { current_password, new_password } = req.body;
+
+    if (!current_password || !new_password) {
+      return res.status(400).json({ message: 'Current password and new password are required.' });
+    }
+
+    if (new_password.length < 8) {
+      return res.status(400).json({ message: 'New password must be at least 8 characters.' });
+    }
+
+    const users = await db.query('SELECT password FROM users WHERE id = ?', [req.user.id]);
+    if (users.length === 0) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    const passwordMatches = await bcrypt.compare(current_password, users[0].password);
+    if (!passwordMatches) {
+      return res.status(400).json({ message: 'Current password is incorrect.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(new_password, 10);
+    await db.query('UPDATE users SET password = ? WHERE id = ?', [hashedPassword, req.user.id]);
+
+    return res.json({ message: 'Password changed successfully.' });
+  } catch (error) {
+    return res.status(500).json({ message: 'Could not change password.', error: error.message });
+  }
+}
+
 module.exports = {
   getProfile,
-  updateProfile
+  updateProfile,
+  changePassword
 };

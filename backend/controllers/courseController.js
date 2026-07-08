@@ -1,5 +1,6 @@
 const path = require('path');
 const db = require('../config/db');
+const subscriptionService = require('../services/subscriptionService');
 
 async function findCourse(id) {
   const courses = await db.query('SELECT * FROM courses WHERE id = ?', [id]);
@@ -90,7 +91,15 @@ async function createCourse(req, res) {
     if (!title || !description) {
       return res.status(400).json({ message: 'Title and description are required.' });
     }
-
+    // Premium check: free teachers are limited in how many courses they can create
+    const canCreate = await subscriptionService.canCreateMoreCourses(req.user.id);
+    if (!canCreate) {
+      return res.status(403).json({
+        message: 'Free plan limited to 3 courses. Upgrade to Teacher Pro for unlimited courses.',
+        code: 'LIMIT_REACHED',
+        upgradePlan: 'teacher_pro'
+      });
+    }
     const result = await db.query(
       `INSERT INTO courses (teacher_id, category_id, title, description, level, duration, cover_image)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,

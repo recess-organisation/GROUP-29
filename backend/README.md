@@ -1,30 +1,32 @@
 # LearnHub Backend
 
-LearnHub Backend is a beginner-friendly REST API for an eLearning platform. It is built with Node.js, Express, MariaDB/MySQL, JWT authentication, bcrypt password hashing, and Multer file uploads.
-
-This backend is one separate repository/project folder. The React frontend lives in the separate `learnhub-frontend` folder.
+LearnHub Backend is a REST API for an eLearning platform. It is built with Node.js, Express, MariaDB/MySQL, JWT authentication, bcrypt password hashing, Multer file uploads, Zod validation, Stripe payments, and Nodemailer.
 
 ## What This Backend Does
 
-- Registers and logs in users.
-- Protects routes with JWT tokens.
-- Supports three roles: `admin`, `teacher`, and `student`.
-- Lets teachers create courses, lessons, materials, and assignments.
-- Lets students enroll in courses, view lessons, submit assignments, and see grades.
-- Lets admins manage users, courses, categories, and statistics.
-- Stores all real application data in MariaDB/MySQL.
+- Registers, logs in, and manages users.
+- Protects routes with JWT tokens and role-based access.
+- Supports four roles: `admin`, `teacher`, `student`, and `parent`.
+- Lets teachers create courses, lessons, materials, assignments, quizzes, and announcements.
+- Lets students enroll in courses, view lessons, submit assignments, and take quizzes.
+- Lets parents link children, set usage rules, and view activity logs.
+- Lets admins manage users, courses, categories, and subscription plans.
+- Sends email notifications for welcome, password reset, and grading.
+- Processes subscription payments via Stripe with a manual admin fallback.
+- Gates premium features (course limits, enrollment limits, parental rule limits) behind subscription tiers.
 
 ## Tech Stack
 
 - Node.js
 - Express.js
-- MariaDB/MySQL
-- `mysql2/promise`
-- JSON Web Tokens with `jsonwebtoken`
-- Password hashing with `bcrypt`
-- File uploads with `multer`
-- CORS with `cors`
-- Environment variables with `dotenv`
+- MariaDB / MySQL (`mysql2/promise`)
+- JSON Web Tokens (`jsonwebtoken`)
+- Password hashing (`bcrypt`)
+- Request validation (`zod`)
+- File uploads (`multer`)
+- Payment processing (`stripe`)
+- Email sending (`nodemailer`)
+- Security (`helmet`, `cors`, `express-rate-limit`, `morgan`)
 
 ## Requirements
 
@@ -33,7 +35,7 @@ Install these before running the project:
 - Node.js 18 or newer
 - npm
 - MariaDB or MySQL
-- A database user. For this local setup, the project uses:
+- A database user. For local setup:
 
 ```text
 DB_USER=root
@@ -48,12 +50,16 @@ If your local MySQL root password is different, update `.env`.
 learnhub-backend/
   config/              Database connection setup
   controllers/         Request logic and SQL queries
-  middleware/          Auth, role checks, and file upload middleware
+  middleware/          Auth, role checks, upload, validation,
+  |                    parental control, premium gating
   routes/              API route definitions
+  services/            Business logic (quiz grading, parental rules,
+  |                    email sending, subscription management)
   uploads/materials/   Lesson materials and assignment attachments
   uploads/submissions/ Student submission files
   database/schema.sql  Creates tables and relationships
   database/seed.sql    Adds sample data
+  migrations/          Incremental SQL migrations
   server.js            Express app entry point
 ```
 
@@ -85,6 +91,15 @@ FRONTEND_URL=http://localhost:5173
 CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
 ```
 
+### Optional Environment Variables
+
+| Variable | Purpose |
+|----------|---------|
+| `STRIPE_SECRET_KEY` | Stripe secret key for payment processing |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret |
+| `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USER`, `EMAIL_PASS`, `EMAIL_FROM` | SMTP settings for email sending (logs to console if omitted) |
+| `PORT` | API server port (default `5000`) |
+
 ## Create and Seed the Database
 
 Run these commands from inside `learnhub-backend`:
@@ -92,6 +107,7 @@ Run these commands from inside `learnhub-backend`:
 ```bash
 mysql -u root -p < database/schema.sql
 mysql -u root -p < database/seed.sql
+node migrations/migrate.js
 ```
 
 When prompted for the password, enter:
@@ -100,7 +116,7 @@ When prompted for the password, enter:
 root
 ```
 
-`schema.sql` creates the `learnhub_db` database and all tables. `seed.sql` inserts sample users, categories, courses, lessons, assignments, enrollments, and submissions.
+`schema.sql` creates the `learnhub_db` database and all tables. `seed.sql` inserts sample users, categories, courses, lessons, assignments, enrollments, and submissions. `migrations/migrate.js` applies incremental migrations for newer features.
 
 ## Run the Backend
 
@@ -147,6 +163,67 @@ Password123!
 | Admin | `admin@learnhub.test` |
 | Teacher | `grace.teacher@learnhub.test` |
 | Student | `brian.student@learnhub.test` |
+| Parent | `akankwatsakevin0@gmail.com` |
+
+## API Routes
+
+| Prefix | Auth | Purpose |
+|--------|------|---------|
+| `POST /api/auth/login` | No | Login |
+| `POST /api/auth/register` | No | Register |
+| `POST /api/auth/forgot-password` | No | Request password reset email |
+| `POST /api/auth/reset-password` | No | Reset password with token |
+| `GET /api/auth/me` | Yes | Get current user |
+| `GET /api/courses` | No | Public course list |
+| `GET /api/courses/:id` | No | Course details |
+| `POST /api/enrollments` | Student | Enroll in course (gated) |
+| `GET /api/enrollments/my` | Student | My enrollments |
+| `POST /api/assignments` | Teacher | Create assignment |
+| `GET /api/assignments/course/:courseId` | Yes | Course assignments |
+| `POST /api/submissions` | Student | Submit work |
+| `PUT /api/submissions/:id/grade` | Teacher | Grade + send notification |
+| `POST /api/lessons` | Teacher | Create lesson |
+| `GET /api/lessons/course/:courseId` | Yes | Course lessons |
+| `POST /api/quizzes` | Teacher | Create quiz |
+| `POST /api/quizzes/:id/attempt` | Student | Start attempt (timed) |
+| `PUT /api/users/profile` | Yes | Update name/phone |
+| `PUT /api/users/change-password` | Yes | Change password |
+| `GET /api/announcements/course/:courseId` | Yes | Course announcements |
+| `POST /api/announcements` | Teacher | Create announcement |
+| `DELETE /api/announcements/:id` | Teacher | Delete announcement |
+| `GET /api/parent/rules` | Parent | Get parental rules (gated) |
+| `POST /api/parent/rules` | Parent | Create rule (gated) |
+| `GET /api/subscriptions/plans` | No | Public plan list |
+| `GET /api/subscriptions/my` | Yes | Current user subscription |
+| `POST /api/subscriptions/create-checkout` | Yes | Stripe checkout session |
+| `POST /api/subscriptions/cancel` | Yes | Cancel subscription |
+| `GET /api/admin/subscriptions` | Admin | List all subscriptions |
+| `GET /api/admin/subscriptions/stats` | Admin | Subscription statistics |
+| `POST /api/admin/subscriptions/assign` | Admin | Manually assign plan |
+
+## Premium Subscription Plans
+
+| Plan | Code | Price | Limits |
+|------|------|-------|--------|
+| Free | `free` | $0 | 3 courses, 3 enrollments, 2 parental rules |
+| Starter | `starter` | $1.50/mo | 10 courses, 10 enrollments, 5 parental rules, certificates |
+| Plus | `plus` | $5.00/mo | Unlimited enrollments, advanced analytics, data export, priority support |
+| Teacher Pro | `teacher_pro` | $9.99/mo | Unlimited courses, API access, bulk enrollment |
+| Institution | `institution` | $99.99/mo | Everything unlimited, white-label, custom branding |
+
+## Email Notifications
+
+The `emailService.js` sends emails via Nodemailer. In development (no SMTP configured), all emails are logged to the console instead of being sent.
+
+| Event | Email Type |
+|-------|-----------|
+| User registration | Welcome email |
+| Password reset request | Reset link with token |
+| Submission graded | Grade notification to student |
+
+## Database Tables (27)
+
+`users`, `courses`, `course_categories`, `enrollments`, `lessons`, `lesson_materials`, `assignments`, `submissions`, `quizzes`, `quiz_questions`, `quiz_options`, `quiz_attempts`, `quiz_answers`, `parental_rules`, `daily_usage`, `parent_children`, `announcements`, `audit_logs`, `token_blacklist`, `allow2_activity_log`, `allow2_config`, `password_reset_tokens`, `subscription_plans`, `user_subscriptions`, `payment_history`
 
 ## How to See the Data
 

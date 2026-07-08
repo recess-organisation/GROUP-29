@@ -171,6 +171,12 @@ body {
   display: flex;
   align-items: center;
   flex: 1;
+  pointer-events: none;
+}
+
+.navbar-collapse .navbar-nav,
+.navbar-collapse .navbar-text {
+  pointer-events: auto;
 }
 
 @media (max-width: 768px) {

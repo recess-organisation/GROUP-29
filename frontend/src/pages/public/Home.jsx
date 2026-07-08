@@ -10,7 +10,7 @@ export default function Home() {
 
   useEffect(() => {
     getCourses()
-      .then((response) => setCourses(response.data.slice(0, 3)))
+      .then((response) => setCourses(response.data.data?.slice(0, 3) || []))
       .finally(() => setLoading(false));
   }, []);
 

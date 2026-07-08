@@ -11,3 +11,11 @@ export function register(data) {
 export function getCurrentUser() {
   return api.get('/auth/me');
 }
+
+export function forgotPassword(email) {
+  return api.post('/auth/forgot-password', { email });
+}
+
+export function resetPassword(token, password) {
+  return api.post('/auth/reset-password', { token, password });
+}

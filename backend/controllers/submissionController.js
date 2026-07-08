@@ -1,5 +1,6 @@
 const path = require('path');
 const db = require('../config/db');
+const emailService = require('../services/emailService');
 const { findCourse, canManageCourse } = require('./courseController');
 const { findAssignment } = require('./assignmentController');
 const { studentIsEnrolled } = require('./lessonController');
@@ -109,6 +110,18 @@ async function gradeSubmission(req, res) {
        WHERE id = ?`,
       [marks_awarded, feedback || null, req.params.id]
     );
+
+    // Send graded notification email (fire-and-forget)
+    const student = await db.query('SELECT email FROM users WHERE id = ?', [submissions[0].student_id]);
+    if (student.length > 0) {
+      emailService.sendGradedNotification(
+        student[0].email,
+        assignment.title,
+        marks_awarded,
+        assignment.total_marks,
+        feedback
+      ).catch(() => {});
+    }
 
     return res.json({ message: 'Submission graded.' });
   } catch (error) {
