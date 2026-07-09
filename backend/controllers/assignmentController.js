@@ -2,6 +2,7 @@ const path = require('path');
 const db = require('../config/db');
 const { findCourse, canManageCourse } = require('./courseController');
 const { canAccessCourse } = require('./lessonController');
+const { getStoredFilePath } = require('../middleware/uploadMiddleware');
 
 async function findAssignment(id) {
   const assignments = await db.query('SELECT * FROM assignments WHERE id = ?', [id]);
@@ -27,7 +28,7 @@ async function createAssignment(req, res) {
     const result = await db.query(
       `INSERT INTO assignments (course_id, teacher_id, title, instructions, due_date, total_marks, attachment)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [course_id, req.user.id, title, instructions, due_date || null, total_marks || 100, req.file ? path.relative(path.join(__dirname, '..'), req.file.path).replace(/\\/g, '/') : null]
+      [course_id, req.user.id, title, instructions, due_date || null, total_marks || 100, getStoredFilePath(req.file)]
     );
 
     return res.status(201).json({ message: 'Assignment created.', assignment_id: result.insertId });
@@ -98,7 +99,7 @@ async function updateAssignment(req, res) {
         due_date || assignment.due_date,
         total_marks || assignment.total_marks,
         status || assignment.status,
-        req.file ? path.relative(path.join(__dirname, '..'), req.file.path).replace(/\\/g, '/') : null,
+        getStoredFilePath(req.file),
         req.params.id
       ]
     );

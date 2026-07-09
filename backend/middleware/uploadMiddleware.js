@@ -15,7 +15,23 @@ const allowedMimeTypes = [
   'text/plain'
 ];
 
+/** Are we running on Vercel serverless (no persistent filesystem)? */
+const isServerless = !!process.env.VERCEL;
+
+if (isServerless) {
+  console.warn('[upload] Serverless environment detected — using memory storage. ' +
+    'Uploaded files will NOT persist. Configure cloud storage (S3, Cloudinary, etc.) for production.');
+}
+
+/**
+ * Create storage engine compatible with the runtime.
+ * - Disk storage for local development
+ * - Memory storage for Vercel serverless (files exist only for the duration of the request)
+ */
 function createStorage(folder) {
+  if (isServerless) {
+    return multer.memoryStorage();
+  }
   return multer.diskStorage({
     destination(req, file, cb) {
       cb(null, path.join(__dirname, '..', 'uploads', folder));
@@ -25,6 +41,20 @@ function createStorage(folder) {
       cb(null, `${Date.now()}-${safeOriginalName}`);
     }
   });
+}
+
+/**
+ * Get the stored file identifier from a Multer-enhanced request object.
+ * - Local disk storage returns the relative file path.
+ * - Memory storage returns the original filename (no persistent path available).
+ */
+function getStoredFilePath(file) {
+  if (!file) return null;
+  if (file.path) {
+    return path.relative(path.join(__dirname, '..'), file.path).replace(/\\/g, '/');
+  }
+  // Memory storage fallback — store original name only
+  return `uploads/memory/${file.originalname}`;
 }
 
 function fileFilter(req, file, cb) {
@@ -50,5 +80,6 @@ const uploadSubmission = multer({
 
 module.exports = {
   uploadMaterial,
-  uploadSubmission
+  uploadSubmission,
+  getStoredFilePath
 };

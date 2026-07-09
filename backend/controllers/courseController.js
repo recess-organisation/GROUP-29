@@ -103,7 +103,7 @@ async function createCourse(req, res) {
     const result = await db.query(
       `INSERT INTO courses (teacher_id, category_id, title, description, level, duration, cover_image)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [req.user.id, category_id || null, title, description, level || 'Beginner', duration || null, req.file ? path.relative(path.join(__dirname, '..'), req.file.path).replace(/\\/g, '/') : null]
+      [req.user.id, category_id || null, title, description, level || 'Beginner', duration || null, getStoredFilePath(req.file)]
     );
 
     const course = await findCourse(result.insertId);
@@ -136,7 +136,7 @@ async function updateCourse(req, res) {
         level || course.level,
         duration || course.duration,
         status || course.status,
-        req.file ? path.relative(path.join(__dirname, '..'), req.file.path).replace(/\\/g, '/') : null,
+        getStoredFilePath(req.file),
         req.params.id
       ]
     );

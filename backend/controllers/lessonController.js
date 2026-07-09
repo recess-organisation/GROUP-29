@@ -1,6 +1,7 @@
 const path = require('path');
 const db = require('../config/db');
 const { findCourse, canManageCourse } = require('./courseController');
+const { getStoredFilePath } = require('../middleware/uploadMiddleware');
 
 async function studentIsEnrolled(studentId, courseId) {
   const rows = await db.query(
@@ -26,7 +27,7 @@ async function insertMaterials(lessonId, files = []) {
   for (const file of files) {
     await db.query(
       'INSERT INTO lesson_materials (lesson_id, file_name, file_path, file_type) VALUES (?, ?, ?, ?)',
-      [lessonId, file.originalname, path.relative(path.join(__dirname, '..'), file.path).replace(/\\/g, '/'), path.extname(file.originalname).replace('.', '')]
+      [lessonId, file.originalname, getStoredFilePath(file), path.extname(file.originalname).replace('.', '')]
     );
   }
 }
