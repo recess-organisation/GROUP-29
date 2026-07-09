@@ -21,6 +21,9 @@ router.post('/create-checkout', authenticateToken, subscriptionController.create
 // POST /api/subscriptions/cancel — Cancel own subscription
 router.post('/cancel', authenticateToken, subscriptionController.cancelMySubscription);
 
+// POST /api/subscriptions/fake-payment — Simulate payment (mock mode)
+router.post('/fake-payment', authenticateToken, subscriptionController.fakePayment);
+
 // GET /api/subscriptions/success — Handle successful checkout redirect
 router.get('/success', subscriptionController.checkoutSuccess);
 

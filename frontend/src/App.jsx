@@ -14,6 +14,7 @@ import ResetPassword from './pages/public/ResetPassword';
 import Pricing from './pages/public/Pricing';
 import Profile from './pages/Profile';
 import SubscriptionManage from './pages/SubscriptionManage';
+import MockCheckout from './pages/public/MockCheckout';
 import TeacherDashboard from './pages/teacher/TeacherDashboard';
 import TeacherCourses from './pages/teacher/TeacherCourses';
 import CreateCourse from './pages/teacher/CreateCourse';
@@ -56,6 +57,7 @@ export default function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/pricing" element={<Pricing />} />
+          <Route path="/pricing/mock-checkout" element={<MockCheckout />} />
         </Route>
 
         <Route element={<ProtectedRoute />}>

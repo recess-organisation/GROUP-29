@@ -12,6 +12,10 @@ export function createCheckoutSession(planCode) {
   return api.post('/subscriptions/create-checkout', { planCode });
 }
 
+export function fakePayment(planCode) {
+  return api.post('/subscriptions/fake-payment', { planCode });
+}
+
 export function cancelSubscription() {
   return api.post('/subscriptions/cancel');
 }

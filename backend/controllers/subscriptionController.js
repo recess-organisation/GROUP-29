@@ -27,7 +27,7 @@ async function getMySubscription(req, res) {
   }
 }
 
-/** POST /api/subscriptions/create-checkout — Create a Stripe Checkout session */
+/** POST /api/subscriptions/create-checkout — Create a checkout session */
 async function createCheckoutSession(req, res) {
   try {
     const { planCode } = req.body;
@@ -40,25 +40,61 @@ async function createCheckoutSession(req, res) {
       return res.status(404).json({ message: 'Plan not found.' });
     }
 
-    // If Stripe is not configured, fall back to manual mode
-    if (!process.env.STRIPE_SECRET_KEY) {
-      return res.status(400).json({
-        message: 'Online payment is not configured. Please contact the administrator.',
-        code: 'PAYMENT_NOT_CONFIGURED'
+    const origin = req.headers.origin || process.env.FRONTEND_URL || 'http://localhost:5173';
+
+    if (process.env.STRIPE_SECRET_KEY) {
+      const result = await subscriptionService.createStripeCheckoutSession({
+        userId: req.user.id,
+        userEmail: req.user.email,
+        planCode,
+        successUrl: `${origin}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancelUrl: `${origin}/pricing`
       });
+      return res.json(result);
     }
 
-    const result = await subscriptionService.createStripeCheckoutSession({
-      userId: req.user.id,
-      userEmail: req.user.email,
-      planCode,
-      successUrl: `${req.headers.origin}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancelUrl: `${req.headers.origin}/pricing`
+    // Fake mode — return a local mock checkout URL
+    return res.json({
+      url: `${origin}/pricing/mock-checkout?plan=${planCode}`
     });
-
-    return res.json(result);
   } catch (error) {
     return res.status(500).json({ message: 'Could not create checkout session.' });
+  }
+}
+
+/** POST /api/subscriptions/fake-payment — Simulate a successful payment (mock mode) */
+async function fakePayment(req, res) {
+  try {
+    const { planCode } = req.body;
+    if (!planCode) {
+      return res.status(400).json({ message: 'Plan code is required.' });
+    }
+
+    const plan = await subscriptionService.getPlanByCode(planCode);
+    if (!plan) {
+      return res.status(404).json({ message: 'Plan not found.' });
+    }
+
+    const subscriptionId = await subscriptionService.createSubscription({
+      userId: req.user.id,
+      planId: plan.id,
+      status: 'active',
+      paymentProvider: 'demo',
+      periodMonths: 1
+    });
+
+    await db.query(
+      `INSERT INTO payment_history (user_id, subscription_id, amount, currency, status, payment_provider, description)
+       VALUES (?, ?, ?, ?, 'completed', 'demo', ?)`,
+      [req.user.id, subscriptionId, plan.price, plan.currency.toUpperCase(), `Demo payment: ${plan.name}`]
+    );
+
+    return res.json({
+      message: 'Payment successful! Your subscription is now active.',
+      subscriptionId
+    });
+  } catch (error) {
+    return res.status(500).json({ message: 'Could not process payment.' });
   }
 }
 
@@ -214,6 +250,7 @@ module.exports = {
   getPlans,
   getMySubscription,
   createCheckoutSession,
+  fakePayment,
   cancelMySubscription,
   checkoutSuccess,
   stripeWebhook,

@@ -47,11 +47,8 @@ export default function Pricing() {
       window.location.href = response.data.url;
     } catch (apiError) {
       const msg = apiError.response?.data?.message;
-      if (apiError.response?.data?.code === 'PAYMENT_NOT_CONFIGURED') {
-        setError('Online payment is not configured yet. Please contact the administrator to upgrade manually.');
-      } else {
-        setError(msg || 'Could not initiate checkout.');
-      }
+      setError(msg || 'Could not initiate checkout.');
+      return;
     } finally {
       setCheckoutLoading(false);
     }
