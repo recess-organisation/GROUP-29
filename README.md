@@ -1,83 +1,300 @@
-# UG Scholar — Build Guide
+# UG Scholar
 
-A step-by-step guide to building a full-stack Learning Management System (LMS) from scratch using **React**, **Express**, **MySQL**, and **Node.js**.
+> An adaptive Learning Management System (LMS) built for modern education — featuring role-based access, course management, quiz engine, assignment submissions, parental controls, and premium subscriptions.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ---
 
 ## Table of Contents
 
-1. [Project Setup](#1-project-setup)
-2. [Database Schema](#2-database-schema)
-3. [Backend Foundation](#3-backend-foundation)
-4. [Authentication System](#4-authentication-system)
-5. [Course & Lesson Management](#5-course--lesson-management)
-6. [Assignment & Submission Workflow](#6-assignment--submission-workflow)
-7. [Quiz Engine with Timer](#7-quiz-engine-with-timer)
-8. [Parental Controls](#8-parental-controls)
-9. [Announcements Feature](#9-announcements-feature)
-10. [Password Reset & Email Notifications](#10-password-reset--email-notifications)
-11. [User Profile Management](#11-user-profile-management)
-12. [Premium Subscription System](#12-premium-subscription-system)
-13. [Frontend Setup & Routing](#13-frontend-setup--routing)
-14. [Frontend Components & Pages](#14-frontend-components--pages)
-15. [Running the Application](#15-running-the-application)
-16. [Optional: Remove Premium Features](#16-optional-remove-premium-features)
+- [Overview](#overview)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Architecture](#architecture)
+- [Quick Start](#quick-start)
+- [Default Accounts](#default-accounts)
+- [Project Structure](#project-structure)
+- [API Overview](#api-overview)
+- [Screenshots](#screenshots)
+- [License](#license)
 
 ---
 
-## 1. Project Setup
+## Overview
 
-### 1.1 Initialize the project structure
+UG Scholar is a full-stack Learning Management System that connects **admins**, **teachers**, **students**, and **parents** in a single platform. Teachers create courses, lessons, quizzes, and assignments. Students enroll, learn, submit work, and take timed quizzes. Parents monitor activity and set usage rules. Admins oversee the entire system and manage subscriptions.
 
-```bash
-mkdir UG_Scholar
-cd UG_Scholar
-mkdir -p backend frontend
+Built with a **React** frontend and an **Express/MySQL** REST API, the platform supports premium subscription tiers (Free, Starter, Plus, Teacher Pro, Institution) with Stripe payment integration.
+
+---
+
+## Features
+
+### 👥 Role-Based Access
+- **Admin** — Full system control: manage users, courses, categories, subscriptions
+- **Teacher** — Create courses, lessons, materials, assignments, quizzes, announcements
+- **Student** — Enroll in courses, view lessons, submit assignments, take timed quizzes
+- **Parent** — Link children, set time/activity usage rules, view activity logs
+
+### 📚 Course Management
+- Course creation with categories, levels (Beginner/Intermediate/Advanced), and duration
+- Lesson creation with order indexing and file/material uploads
+- Enrollment tracking with progress percentage
+
+### 📝 Assignments & Submissions
+- Teachers create assignments with due dates and marking schemes
+- Students submit files; teachers grade with feedback and marks
+- Email notifications on grade release
+
+### 🧠 Quiz Engine
+- Multiple-choice and true/false question types
+- Configurable time limits with countdown timer (auto-submit on expiry)
+- Maximum attempt limits and pass percentage thresholds
+- Auto-grading with instant results
+
+### 🔒 Parental Controls
+- Link parent accounts to student accounts
+- Create time-based access rules (day of week, start/end time)
+- Set daily usage limits per activity type (lesson, quiz, general)
+- Block/allow specific activities during defined windows
+
+### 📢 Announcements
+- Teachers post announcements to course pages
+- Students see announcements in their learning dashboard
+
+### 💳 Premium Subscriptions
+- **Free** — 3 courses, 3 enrollments, 2 parental rules
+- **Starter** ($1.50/mo) — 10 courses, certificates, course reviews
+- **Plus** ($5/mo) — Unlimited enrollments, analytics, data export, priority support
+- **Teacher Pro** ($9.99/mo) — Unlimited courses, API access, bulk enrollment
+- **Institution** ($99.99/mo) — White-label, custom branding, dedicated support
+- Stripe Checkout integration with admin manual assignment fallback
+
+### 🔐 Security & Authentication
+- JWT-based authentication with token blacklisting (logout)
+- bcrypt password hashing
+- Zod request validation
+- Rate limiting on auth routes
+- Helmet security headers, CORS configuration
+
+### 📧 Email Notifications
+- Welcome email on registration
+- Password reset with expiring secure links
+- Grade published notification
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Frontend** | React 18, React Router 6, Axios, Bootstrap 5, Vite 8 |
+| **Backend** | Node.js, Express.js |
+| **Database** | MariaDB / MySQL (`mysql2/promise`) |
+| **Authentication** | JSON Web Tokens (`jsonwebtoken`), bcrypt |
+| **Validation** | Zod |
+| **File Uploads** | Multer |
+| **Payments** | Stripe |
+| **Email** | Nodemailer (console fallback in dev) |
+| **Security** | Helmet, CORS, express-rate-limit, Morgan |
+
+---
+
+## Architecture
+
+```text
+┌─────────────────────────────────────────────────────────────┐
+│                    Frontend (React + Vite)                   │
+│  http://localhost:5173                                       │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌────────────┐  │
+│  │  Public  │  │ Teacher  │  │ Student  │  │  Parent /  │  │
+│  │  Pages   │  │ Dashboard│  │ Dashboard│  │  Admin     │  │
+│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └─────┬──────┘  │
+│       └──────────────┴─────────────┴──────────────┘         │
+│                        │ Axios + JWT                        │
+└────────────────────────┼────────────────────────────────────┘
+                         │ REST API
+┌────────────────────────┼────────────────────────────────────┐
+│              Backend (Express + MySQL)                       │
+│  http://localhost:5000                                       │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌────────────┐  │
+│  │  Routes  │→│Controller│→│ Service  │→│  Database   │  │
+│  └──────────┘  └──────────┘  └──────────┘  └────────────┘  │
+│       │              │              │                        │
+│  ┌────┴────┐   ┌─────┴─────┐  ┌────┴─────┐                 │
+│  │  Auth   │   │ Middleware │  │  Email   │                 │
+│  │  JWT    │   │ Role/Val/ │  │  Stripe  │                 │
+│  │         │   │ Upload/   │  │  Quiz    │                 │
+│  │         │   │ Premium/  │  │  Engine  │                 │
+│  │         │   │ Parental  │  │          │                 │
+│  └─────────┘   └───────────┘  └──────────┘                 │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-### 1.2 Initialize the backend
+---
 
+## Quick Start
+
+### Prerequisites
+- Node.js 18+
+- npm
+- MariaDB or MySQL
+
+### 1. Clone & Install
+```bash
+git clone https://github.com/recess-organisation/GROUP-29.git
+cd GROUP-29
+
+# Backend
+cd backend
+npm install
+
+# Frontend
+cd ../frontend
+npm install
+```
+
+### 2. Configure Environment
+```bash
+# Backend
+cd backend
+cp .env.example .env
+# Edit .env with your database credentials
+
+# Frontend
+cd ../frontend
+cp .env.example .env
+```
+
+### 3. Setup Database
 ```bash
 cd backend
-npm init -y
-npm install express mysql2 jsonwebtoken bcrypt multer cors dotenv helmet morgan express-rate-limit zod stripe nodemailer
-npm install --save-dev nodemon
+mysql -u root -p < database/schema.sql
+mysql -u root -p < database/seed.sql
+npm run migrate
 ```
 
-Add to `backend/package.json`:
-
-```json
-"scripts": {
-  "start": "node server.js",
-  "dev": "nodemon server.js",
-  "migrate": "node migrations/migrate.js"
-}
-```
-
-### 1.3 Initialize the frontend
-
+### 4. Run the Application
 ```bash
-cd ../frontend
-npm create vite@latest . -- --template react
-npm install
-npm install axios react-router-dom bootstrap
-```
+# Terminal 1 — Backend (http://localhost:5000)
+cd backend
+npm run dev
 
-### 1.4 Create the folder structure
-
-```bash
-# Backend folders
-cd ../backend
-mkdir -p config controllers middleware routes services migrations database uploads/materials uploads/submissions __tests__
-
-# Frontend folders
-cd ../frontend/src
-mkdir -p components context layouts pages/public pages/student pages/teacher pages/admin pages/parent services utils
+# Terminal 2 — Frontend (http://localhost:5173)
+cd frontend
+npm run dev
 ```
 
 ---
 
-## 2. Database Schema
+## Default Accounts
+
+All seeded accounts use the password: **`Password123!`**
+
+| Role | Email | Name |
+|------|-------|------|
+| **Admin** | admin@learnhub.test | Admin User |
+| **Teacher** | grace.teacher@learnhub.test | Grace Namatovu |
+| **Teacher** | daniel.teacher@learnhub.test | Daniel Okello |
+| **Teacher** | amina.teacher@learnhub.test | Amina Kato |
+| **Student** | brian.student@learnhub.test | Brian Ssemanda |
+| **Student** | claire.student@learnhub.test | Claire Atim |
+| **Student** | david.student@learnhub.test | David Mugisha |
+| **Student** | esther.student@learnhub.test | Esther Nakayiza |
+| **Student** | faith.student@learnhub.test | Faith Namugerwa |
+| **Student** | isaac.student@learnhub.test | Isaac Ocen |
+| **Student** | joan.student@learnhub.test | Joan Akello |
+| **Student** | peter.student@learnhub.test | Peter Waiswa |
+
+---
+
+## Project Structure
+
+```text
+UG_Scholar/
+├── backend/
+│   ├── config/            # Database connection (db.js)
+│   ├── controllers/       # Route handlers
+│   ├── database/          # Schema & seed SQL files
+│   ├── middleware/        # Auth, role, validation, upload, etc.
+│   ├── migrations/        # SQL migration files + runner
+│   ├── routes/            # Express route definitions
+│   ├── services/          # Business logic (email, quiz, subscription, parental)
+│   ├── uploads/           # File storage (materials, submissions)
+│   ├── __tests__/         # Jest test suite
+│   ├── server.js          # Express app entry point
+│   └── package.json
+├── frontend/
+│   ├── src/
+│   │   ├── components/    # Reusable UI components
+│   │   ├── context/       # AuthContext (React context)
+│   │   ├── layouts/       # PublicLayout, DashboardLayout
+│   │   ├── pages/         # public/, teacher/, student/, parent/, admin/
+│   │   ├── services/      # Axios API service modules
+│   │   └── utils/         # Helper functions
+│   ├── index.html
+│   └── package.json
+├── README.md
+└── LICENSE
+```
+
+---
+
+## API Overview
+
+| Method | Endpoint | Auth | Purpose |
+|--------|----------|------|---------|
+| POST | `/api/auth/register` | No | Register new user |
+| POST | `/api/auth/login` | No | Login, returns JWT |
+| GET | `/api/auth/me` | Yes | Get current user |
+| POST | `/api/auth/logout` | Yes | Blacklist token |
+| POST | `/api/auth/forgot-password` | No | Request password reset |
+| POST | `/api/auth/reset-password` | No | Reset password with token |
+| GET | `/api/courses` | No | List courses (filterable) |
+| GET | `/api/courses/:id` | No | Course details |
+| POST | `/api/courses` | Teacher | Create course |
+| PUT | `/api/courses/:id` | Teacher | Update course |
+| GET | `/api/lessons/course/:courseId` | Yes | Course lessons |
+| POST | `/api/lessons` | Teacher | Create lesson |
+| POST | `/api/lessons/upload` | Teacher | Upload material |
+| GET | `/api/lessons/:lessonId/materials` | Yes | Get materials |
+| POST | `/api/enrollments` | Student | Enroll in course |
+| GET | `/api/enrollments/my` | Student | My enrollments |
+| GET | `/api/assignments/course/:courseId` | Yes | Course assignments |
+| POST | `/api/assignments` | Teacher | Create assignment |
+| POST | `/api/submissions` | Student | Submit assignment |
+| GET | `/api/submissions/assignment/:assignmentId` | Teacher | View submissions |
+| PUT | `/api/submissions/:id/grade` | Teacher | Grade submission |
+| GET | `/api/quizzes/course/:courseId` | Yes | Course quizzes |
+| GET | `/api/quizzes/:id` | Yes | Quiz with questions |
+| POST | `/api/quizzes/:id/attempt` | Student | Start quiz attempt |
+| POST | `/api/quizzes/:id/submit/:attemptId` | Student | Submit quiz |
+| GET | `/api/parent/children` | Parent | Linked children |
+| POST | `/api/parent/children` | Parent | Link child |
+| GET | `/api/parent/rules` | Parent | Get parental rules |
+| POST | `/api/parent/rules` | Parent | Create rule |
+| DELETE | `/api/parent/rules/:id` | Parent | Delete rule |
+| GET | `/api/announcements/course/:courseId` | Yes | Course announcements |
+| POST | `/api/announcements` | Teacher | Create announcement |
+| DELETE | `/api/announcements/:id` | Teacher | Delete announcement |
+| GET | `/api/users/profile` | Yes | Get profile |
+| PUT | `/api/users/profile` | Yes | Update profile |
+| PUT | `/api/users/change-password` | Yes | Change password |
+| GET | `/api/subscriptions/plans` | No | List plans |
+| GET | `/api/subscriptions/my` | Yes | My subscription |
+| POST | `/api/subscriptions/create-checkout` | Yes | Stripe checkout |
+| POST | `/api/subscriptions/cancel` | Yes | Cancel subscription |
+| GET | `/api/admin/users` | Admin | Manage users |
+| GET | `/api/admin/subscriptions` | Admin | All subscriptions |
+| GET | `/api/admin/subscriptions/stats` | Admin | Revenue stats |
+| POST | `/api/admin/subscriptions/assign` | Admin | Assign plan manually |
+
+---
+
+## License
+
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
 
 Create `backend/database/schema.sql` with the following tables. Each group builds on the previous ones. Run it with:
 

@@ -1,6 +1,6 @@
-# LearnHub Backend
+# UG Scholar — Backend
 
-LearnHub Backend is a REST API for an eLearning platform. It is built with Node.js, Express, MariaDB/MySQL, JWT authentication, bcrypt password hashing, Multer file uploads, Zod validation, Stripe payments, and Nodemailer.
+UG Scholar Backend is a REST API for an adaptive Learning Management System (LMS). It is built with Node.js, Express, MariaDB/MySQL, JWT authentication, bcrypt password hashing, Multer file uploads, Zod validation, Stripe payments, and Nodemailer.
 
 ## What This Backend Does
 
@@ -17,37 +17,27 @@ LearnHub Backend is a REST API for an eLearning platform. It is built with Node.
 
 ## Tech Stack
 
-- Node.js
-- Express.js
-- MariaDB / MySQL (`mysql2/promise`)
-- JSON Web Tokens (`jsonwebtoken`)
-- Password hashing (`bcrypt`)
-- Request validation (`zod`)
-- File uploads (`multer`)
-- Payment processing (`stripe`)
-- Email sending (`nodemailer`)
-- Security (`helmet`, `cors`, `express-rate-limit`, `morgan`)
+- **Node.js** runtime
+- **Express.js** web framework
+- **MariaDB / MySQL** (`mysql2/promise`)
+- **JSON Web Tokens** (`jsonwebtoken`)
+- **bcrypt** for password hashing
+- **Zod** for request validation
+- **Multer** for file uploads
+- **Stripe** for payment processing
+- **Nodemailer** for email sending
+- **Helmet, CORS, express-rate-limit, Morgan** for security and logging
 
 ## Requirements
-
-Install these before running the project:
 
 - Node.js 18 or newer
 - npm
 - MariaDB or MySQL
-- A database user. For local setup:
-
-```text
-DB_USER=root
-DB_PASSWORD=root
-```
-
-If your local MySQL root password is different, update `.env`.
 
 ## Folder Structure
 
 ```text
-learnhub-backend/
+backend/
   config/              Database connection setup
   controllers/         Request logic and SQL queries
   middleware/          Auth, role checks, upload, validation,
@@ -65,7 +55,7 @@ learnhub-backend/
 
 ## First-Time Setup
 
-From inside `learnhub-backend`:
+From inside `backend`:
 
 ```bash
 npm install
@@ -77,7 +67,7 @@ Create a local environment file:
 cp .env.example .env
 ```
 
-The local `.env` should look like this for root/root MariaDB:
+Then edit `.env` to match your database credentials:
 
 ```env
 PORT=5000
@@ -85,7 +75,7 @@ DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=root
 DB_NAME=learnhub_db
-JWT_SECRET=learnhub_local_development_secret_change_before_production
+JWT_SECRET=replace_this_with_a_long_random_secret
 JWT_EXPIRES_IN=1d
 FRONTEND_URL=http://localhost:5173
 CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
@@ -98,22 +88,16 @@ CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
 | `STRIPE_SECRET_KEY` | Stripe secret key for payment processing |
 | `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret |
 | `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USER`, `EMAIL_PASS`, `EMAIL_FROM` | SMTP settings for email sending (logs to console if omitted) |
-| `PORT` | API server port (default `5000`) |
+| `DB_PORT` | Database port (default `3306`) |
 
 ## Create and Seed the Database
 
-Run these commands from inside `learnhub-backend`:
+Run these commands from inside `backend`:
 
 ```bash
 mysql -u root -p < database/schema.sql
 mysql -u root -p < database/seed.sql
 node migrations/migrate.js
-```
-
-When prompted for the password, enter:
-
-```text
-root
 ```
 
 `schema.sql` creates the `learnhub_db` database and all tables. `seed.sql` inserts sample users, categories, courses, lessons, assignments, enrollments, and submissions. `migrations/migrate.js` applies incremental migrations for newer features.
@@ -147,7 +131,7 @@ curl http://localhost:5000/
 Expected response:
 
 ```json
-{"message":"LearnHub API is running."}
+{"message":"UG Scholar API is running."}
 ```
 
 ## Default Login Accounts
@@ -163,7 +147,9 @@ Password123!
 | Admin | `admin@learnhub.test` |
 | Teacher | `grace.teacher@learnhub.test` |
 | Student | `brian.student@learnhub.test` |
-| Parent | `akankwatsakevin0@gmail.com` |
+| Parent | `parent@learnhub.test` |
+
+> **Note:** The parent account (`parent@learnhub.test`) is a sample account created in the seed data. For a full list of all 12 seed accounts, see `database/seed.sql`.
 
 ## API Routes
 

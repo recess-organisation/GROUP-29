@@ -1,14 +1,14 @@
-# LearnHub Frontend
+# UG Scholar — Frontend
 
-LearnHub Frontend is a React application for an eLearning platform. It connects to the LearnHub Express API and provides routing, authentication, role-based dashboards, premium subscription management, quiz timer, announcements, password reset, and profile management.
+UG Scholar Frontend is a React application for an adaptive Learning Management System (LMS). It connects to the UG Scholar Express API and provides routing, authentication, role-based dashboards, premium subscription management, quiz timer, announcements, password reset, and profile management.
 
 ## Tech Stack
 
-- React 18 with modern JavaScript (JSX)
-- React Router 6 for page navigation
-- Axios for API requests with JWT interceptors
-- Bootstrap 5 for responsive UI
-- Vite 8 for development and production builds
+- **React 18** with modern JavaScript (JSX)
+- **React Router 6** for page navigation
+- **Axios** for API requests with JWT interceptors
+- **Bootstrap 5** for responsive UI
+- **Vite 8** for development and production builds
 
 ## Setup
 
@@ -24,12 +24,11 @@ npm install
 cp .env.example .env
 ```
 
-3. Confirm the backend URL:
+3. Confirm the backend URL (default port is 5000, but can be changed in `server.js`):
 
 ```env
 VITE_API_URL=http://localhost:5000/api
 VITE_UPLOADS_URL=http://localhost:5000
-VITE_STRIPE_PUBLISHABLE_KEY=pk_test_... (optional, for Stripe Checkout)
 ```
 
 4. Start the app:
@@ -51,7 +50,7 @@ The frontend runs on `http://localhost:5173` by default.
 - `pages/parent/` — ParentDashboard, ChildActivity
 - `pages/admin/` — AdminDashboard, ManageUsers, ManageCourses, ManageCategories, ManageSubscriptions
 - `pages/` — Profile, SubscriptionManage (top-level protected routes)
-- `services/` — Axios API functions grouped by backend resource (authService, courseService, enrollmentService, assignmentService, submissionService, lessonService, quizService, parentService, adminService, announcementService, subscriptionService, userService)
+- `services/` — Axios API functions grouped by backend resource
 - `utils/` — Helper functions (formatDate, etc.)
 
 ## Routing
@@ -161,11 +160,11 @@ Form pages keep input values in React state. On submit, they call a service func
 
 ## Default Login Accounts
 
-Use the sample accounts from the backend seed data:
+All seeded accounts use the password: `Password123!`
 
 | Role | Email | Password |
 |------|-------|----------|
 | Admin | admin@learnhub.test | Password123! |
 | Teacher | grace.teacher@learnhub.test | Password123! |
 | Student | brian.student@learnhub.test | Password123! |
-| Parent | akankwatsakevin0@gmail.com | Password123! |
+| Parent | parent@learnhub.test | Password123! |
