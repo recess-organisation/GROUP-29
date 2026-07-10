@@ -45,14 +45,19 @@ async function getCourses(req, res) {
     const total = countResult[0].total;
 
     const sql = `
-      SELECT c.*, u.full_name AS teacher_name, cat.name AS category_name,
+      SELECT c.id, c.teacher_id, c.category_id, c.title, c.description,
+        c.level, c.duration, c.status, c.cover_image, c.created_at, c.updated_at,
+        u.full_name AS teacher_name, cat.name AS category_name,
         COUNT(e.id) AS enrolled_students
       FROM courses c
       JOIN users u ON u.id = c.teacher_id
       LEFT JOIN course_categories cat ON cat.id = c.category_id
       LEFT JOIN enrollments e ON e.course_id = c.id AND e.status = 'active'
       ${where}
-      GROUP BY c.id ORDER BY c.created_at DESC
+      GROUP BY c.id, c.teacher_id, c.category_id, c.title, c.description,
+        c.level, c.duration, c.status, c.cover_image, c.created_at, c.updated_at,
+        u.full_name, cat.name
+      ORDER BY c.created_at DESC
       LIMIT ? OFFSET ?
     `;
     params.push(limitNum, offset);
@@ -173,12 +178,17 @@ async function deleteCourse(req, res) {
 async function getMyCourses(req, res) {
   try {
     const courses = await db.query(
-      `SELECT c.*, cat.name AS category_name, COUNT(e.id) AS enrolled_students
+      `SELECT c.id, c.teacher_id, c.category_id, c.title, c.description,
+        c.level, c.duration, c.status, c.cover_image, c.created_at, c.updated_at,
+        cat.name AS category_name,
+        COUNT(e.id) AS enrolled_students
        FROM courses c
        LEFT JOIN course_categories cat ON cat.id = c.category_id
        LEFT JOIN enrollments e ON e.course_id = c.id AND e.status = 'active'
        WHERE c.teacher_id = ?
-       GROUP BY c.id
+       GROUP BY c.id, c.teacher_id, c.category_id, c.title, c.description,
+        c.level, c.duration, c.status, c.cover_image, c.created_at, c.updated_at,
+        cat.name
        ORDER BY c.created_at DESC`,
       [req.user.id]
     );
