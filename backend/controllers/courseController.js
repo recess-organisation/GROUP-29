@@ -1,6 +1,7 @@
 const path = require('path');
 const db = require('../config/db');
 const subscriptionService = require('../services/subscriptionService');
+const { getStoredFilePath } = require('../middleware/uploadMiddleware');
 
 async function findCourse(id) {
   const courses = await db.query('SELECT * FROM courses WHERE id = ?', [id]);
