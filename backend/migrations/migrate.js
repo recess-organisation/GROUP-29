@@ -7,7 +7,9 @@ async function runMigrations() {
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || 'root',
-    multipleStatements: true
+    port: Number(process.env.DB_PORT) || 3306,
+    multipleStatements: true,
+    ...(process.env.DB_SSL === 'true' && { ssl: { rejectUnauthorized: true } })
   });
 
   const migrationsDir = path.join(__dirname);
