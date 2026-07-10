@@ -34,6 +34,7 @@ async function enrollInCourse(req, res) {
 
     return res.status(201).json({ message: 'Enrollment successful.', enrollment_id: result.insertId });
   } catch (error) {
+    console.error('[enrollmentController.enrollInCourse]', error.message);
     return res.status(500).json({ message: 'Could not enroll in course.' });
   }
 }
@@ -53,6 +54,7 @@ async function getMyEnrolledCourses(req, res) {
     );
     return res.json(courses);
   } catch (error) {
+    console.error('[enrollmentController.getMyEnrolledCourses]', error.message);
     return res.status(500).json({ message: 'Could not load enrolled courses.' });
   }
 }
@@ -80,6 +82,7 @@ async function getStudentsInCourse(req, res) {
 
     return res.json(students);
   } catch (error) {
+    console.error('[enrollmentController.getStudentsInCourse]', error.message);
     return res.status(500).json({ message: 'Could not load enrolled students.' });
   }
 }
@@ -109,6 +112,7 @@ async function updateProgress(req, res) {
     await db.query('UPDATE enrollments SET progress_percentage = ? WHERE id = ?', [progress, req.params.id]);
     return res.json({ message: 'Progress updated.' });
   } catch (error) {
+    console.error('[enrollmentController.updateProgress]', error.message);
     return res.status(500).json({ message: 'Could not update progress.' });
   }
 }

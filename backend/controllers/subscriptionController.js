@@ -9,6 +9,7 @@ async function getPlans(req, res) {
     const plans = await subscriptionService.getPublicPlans();
     return res.json(plans);
   } catch (error) {
+    console.error('[subscriptionController.getPlans]', error.message);
     return res.status(500).json({ message: 'Could not load plans.' });
   }
 }
@@ -23,6 +24,7 @@ async function getMySubscription(req, res) {
       subscription
     });
   } catch (error) {
+    console.error('[subscriptionController.getMySubscription]', error.message);
     return res.status(500).json({ message: 'Could not load subscription.' });
   }
 }
@@ -58,6 +60,7 @@ async function createCheckoutSession(req, res) {
       url: `${origin}/pricing/mock-checkout?plan=${planCode}`
     });
   } catch (error) {
+    console.error('[subscriptionController.createCheckoutSession]', error.message);
     return res.status(500).json({ message: 'Could not create checkout session.' });
   }
 }
@@ -94,6 +97,7 @@ async function fakePayment(req, res) {
       subscriptionId
     });
   } catch (error) {
+    console.error('[subscriptionController.fakePayment]', error.message);
     return res.status(500).json({ message: 'Could not process payment.' });
   }
 }
@@ -107,6 +111,7 @@ async function cancelMySubscription(req, res) {
     }
     return res.json({ message: 'Subscription canceled.' });
   } catch (error) {
+    console.error('[subscriptionController.cancelMySubscription]', error.message);
     return res.status(500).json({ message: 'Could not cancel subscription.' });
   }
 }
@@ -131,6 +136,7 @@ async function checkoutSuccess(req, res) {
 
     return res.json({ message: 'Subscription activated.' });
   } catch (error) {
+    console.error('[subscriptionController.checkoutSuccess]', error.message);
     return res.status(500).json({ message: 'Could not verify payment.' });
   }
 }
@@ -164,6 +170,7 @@ async function adminGetAllSubscriptions(req, res) {
     const result = await subscriptionService.getAllSubscriptions(page, limit);
     return res.json(result);
   } catch (error) {
+    console.error('[subscriptionController.adminGetAllSubscriptions]', error.message);
     return res.status(500).json({ message: 'Could not load subscriptions.' });
   }
 }
@@ -174,6 +181,7 @@ async function adminGetStats(req, res) {
     const stats = await subscriptionService.getSubscriptionStats();
     return res.json(stats);
   } catch (error) {
+    console.error('[subscriptionController.adminGetStats]', error.message);
     return res.status(500).json({ message: 'Could not load stats.' });
   }
 }
@@ -202,6 +210,7 @@ async function adminAssignPlan(req, res) {
 
     return res.status(201).json({ message: 'Plan assigned.', subscriptionId });
   } catch (error) {
+    console.error('[subscriptionController.adminAssignPlan]', error.message);
     return res.status(500).json({ message: 'Could not assign plan.' });
   }
 }
@@ -212,6 +221,7 @@ async function adminCancelSubscription(req, res) {
     await subscriptionService.expireSubscription(req.params.id);
     return res.json({ message: 'Subscription expired.' });
   } catch (error) {
+    console.error('[subscriptionController.adminCancelSubscription]', error.message);
     return res.status(500).json({ message: 'Could not cancel subscription.' });
   }
 }
@@ -242,6 +252,7 @@ async function adminUpdatePlan(req, res) {
     await db.query(`UPDATE subscription_plans SET ${sets.join(', ')} WHERE id = ?`, params);
     return res.json({ message: 'Plan updated.' });
   } catch (error) {
+    console.error('[subscriptionController.adminUpdatePlan]', error.message);
     return res.status(500).json({ message: 'Could not update plan.' });
   }
 }

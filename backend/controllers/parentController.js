@@ -29,6 +29,7 @@ async function getDashboard(req, res) {
 
     return res.json({ children });
   } catch (error) {
+    console.error('[parentController.getDashboard]', error.message);
     return res.status(500).json({ message: 'Could not load dashboard.' });
   }
 }
@@ -67,6 +68,7 @@ async function linkChild(req, res) {
 
     return res.status(201).json({ message: 'Child linked successfully.', child });
   } catch (error) {
+    console.error('[parentController.linkChild]', error.message);
     return res.status(500).json({ message: 'Could not link child.' });
   }
 }
@@ -82,6 +84,7 @@ async function unlinkChild(req, res) {
 
     return res.json({ message: 'Child unlinked successfully.' });
   } catch (error) {
+    console.error('[parentController.unlinkChild]', error.message);
     return res.status(500).json({ message: 'Could not unlink child.' });
   }
 }
@@ -101,6 +104,7 @@ async function getRules(req, res) {
     const rules = await parentalControlService.getRules(childId);
     return res.json(rules);
   } catch (error) {
+    console.error('[parentController.getRules]', error.message);
     return res.status(500).json({ message: 'Could not load rules.' });
   }
 }
@@ -140,6 +144,7 @@ async function createRule(req, res) {
 
     return res.status(201).json({ message: 'Rule created.', ruleId: id });
   } catch (error) {
+    console.error('[parentController.createRule]', error.message);
     return res.status(500).json({ message: 'Could not create rule.' });
   }
 }
@@ -160,6 +165,7 @@ async function updateRule(req, res) {
     await parentalControlService.updateRule(id, req.body);
     return res.json({ message: 'Rule updated.' });
   } catch (error) {
+    console.error('[parentController.updateRule]', error.message);
     return res.status(500).json({ message: 'Could not update rule.' });
   }
 }
@@ -180,6 +186,7 @@ async function deleteRule(req, res) {
     await parentalControlService.deleteRule(id);
     return res.json({ message: 'Rule deleted.' });
   } catch (error) {
+    console.error('[parentController.deleteRule]', error.message);
     return res.status(500).json({ message: 'Could not delete rule.' });
   }
 }
@@ -198,6 +205,7 @@ async function getDailyUsage(req, res) {
     const usage = await parentalControlService.getDailyUsage(childId);
     return res.json(usage);
   } catch (error) {
+    console.error('[parentController.getDailyUsage]', error.message);
     return res.status(500).json({ message: 'Could not load usage.' });
   }
 }
@@ -225,6 +233,7 @@ async function getChildActivityLog(req, res) {
 
     return res.json(logs);
   } catch (error) {
+    console.error('[parentController.getChildActivityLog]', error.message);
     return res.status(500).json({ message: 'Could not load activity log.' });
   }
 }

@@ -44,7 +44,7 @@ import ChildActivity from './pages/parent/ChildActivity';
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       {/* React Router maps URLs to pages. Nested routes let dashboards share one layout. */}
       <Routes>
         <Route element={<PublicLayout />}>

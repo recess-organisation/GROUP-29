@@ -18,6 +18,7 @@ async function getQuizzesByLesson(req, res) {
     }
     return res.json(quizzes);
   } catch (error) {
+    console.error('[quizController.getQuizzesByLesson]', error.message);
     return res.status(500).json({ message: 'Could not load quizzes.' });
   }
 }
@@ -28,6 +29,7 @@ async function getQuizForEdit(req, res) {
     if (!quiz) return res.status(404).json({ message: 'Quiz not found.' });
     return res.json(quiz);
   } catch (error) {
+    console.error('[quizController.getQuizForEdit]', error.message);
     return res.status(500).json({ message: 'Could not load quiz.' });
   }
 }
@@ -46,6 +48,7 @@ async function createQuiz(req, res) {
 
     return res.status(201).json({ message: 'Quiz created.', quizId: result.insertId });
   } catch (error) {
+    console.error('[quizController.createQuiz]', error.message);
     return res.status(500).json({ message: 'Could not create quiz.' });
   }
 }
@@ -59,6 +62,7 @@ async function updateQuiz(req, res) {
     );
     return res.json({ message: 'Quiz updated.' });
   } catch (error) {
+    console.error('[quizController.updateQuiz]', error.message);
     return res.status(500).json({ message: 'Could not update quiz.' });
   }
 }
@@ -68,6 +72,7 @@ async function deleteQuiz(req, res) {
     await db.query('DELETE FROM quizzes WHERE id = ?', [req.params.id]);
     return res.json({ message: 'Quiz deleted.' });
   } catch (error) {
+    console.error('[quizController.deleteQuiz]', error.message);
     return res.status(500).json({ message: 'Could not delete quiz.' });
   }
 }
@@ -132,6 +137,7 @@ async function getQuizForTaking(req, res) {
 
     return res.json(quiz);
   } catch (error) {
+    console.error('[quizController.getQuizForTaking]', error.message);
     return res.status(500).json({ message: 'Could not load quiz.' });
   }
 }
@@ -159,6 +165,7 @@ async function startAttempt(req, res) {
 
     return res.status(201).json({ message: 'Attempt started.', attemptId: result.insertId });
   } catch (error) {
+    console.error('[quizController.startAttempt]', error.message);
     return res.status(500).json({ message: 'Could not start attempt.' });
   }
 }
@@ -184,6 +191,7 @@ async function submitAttempt(req, res) {
     const result = await quizService.gradeAttempt(attemptId, answers || {});
     return res.json(result);
   } catch (error) {
+    console.error('[quizController.submitAttempt]', error.message);
     return res.status(500).json({ message: 'Could not submit attempt.' });
   }
 }

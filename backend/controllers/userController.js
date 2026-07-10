@@ -14,6 +14,7 @@ async function getProfile(req, res) {
 
     return res.json(users[0]);
   } catch (error) {
+    console.error('[userController.getProfile]', error.message);
     return res.status(500).json({ message: 'Could not load profile.' });
   }
 }
@@ -29,6 +30,7 @@ async function updateProfile(req, res) {
     await db.query('UPDATE users SET full_name = ?, phone = ? WHERE id = ?', [full_name, phone || null, req.user.id]);
     return getProfile(req, res);
   } catch (error) {
+    console.error('[userController.updateProfile]', error.message);
     return res.status(500).json({ message: 'Could not update profile.' });
   }
 }
@@ -60,6 +62,7 @@ async function changePassword(req, res) {
 
     return res.json({ message: 'Password changed successfully.' });
   } catch (error) {
+    console.error('[userController.changePassword]', error.message);
     return res.status(500).json({ message: 'Could not change password.' });
   }
 }

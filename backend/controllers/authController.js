@@ -53,6 +53,7 @@ async function register(req, res) {
 
     return res.status(201).json({ message: 'Account created successfully.', token, user: users[0] });
   } catch (error) {
+    console.error('[authController.register]', error.message);
     return res.status(500).json({ message: 'Registration failed.' });
   }
 }
@@ -84,6 +85,7 @@ async function login(req, res) {
     const token = createToken(user);
     return res.json({ message: 'Login successful.', token, user });
   } catch (error) {
+    console.error('[authController.login]', error.message);
     return res.status(500).json({ message: 'Login failed.' });
   }
 }
@@ -107,6 +109,7 @@ async function logout(req, res) {
 
     return res.json({ message: 'Logged out successfully.' });
   } catch (error) {
+    console.error('[authController.logout]', error.message);
     return res.status(500).json({ message: 'Logout failed.' });
   }
 }
@@ -124,6 +127,7 @@ async function me(req, res) {
 
     return res.json(users[0]);
   } catch (error) {
+    console.error('[authController.me]', error.message);
     return res.status(500).json({ message: 'Could not load profile.' });
   }
 }

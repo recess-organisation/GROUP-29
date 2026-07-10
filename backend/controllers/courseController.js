@@ -59,6 +59,7 @@ async function getCourses(req, res) {
     const courses = await db.query(sql, params);
     return res.json({ data: courses, total, page: pageNum, limit: limitNum });
   } catch (error) {
+    console.error('[courseController.getCourses]', error.message);
     return res.status(500).json({ message: 'Could not load courses.' });
   }
 }
@@ -80,6 +81,7 @@ async function getCourseById(req, res) {
 
     return res.json(courses[0]);
   } catch (error) {
+    console.error('[courseController.getCourseById]', error.message);
     return res.status(500).json({ message: 'Could not load course.' });
   }
 }
@@ -109,6 +111,7 @@ async function createCourse(req, res) {
     const course = await findCourse(result.insertId);
     return res.status(201).json({ message: 'Course created.', course });
   } catch (error) {
+    console.error('[courseController.createCourse]', error.message);
     return res.status(500).json({ message: 'Could not create course.' });
   }
 }
@@ -143,6 +146,7 @@ async function updateCourse(req, res) {
 
     return res.json({ message: 'Course updated.', course: await findCourse(req.params.id) });
   } catch (error) {
+    console.error('[courseController.updateCourse]', error.message);
     return res.status(500).json({ message: 'Could not update course.' });
   }
 }
@@ -161,6 +165,7 @@ async function deleteCourse(req, res) {
     await db.query('UPDATE courses SET status = ? WHERE id = ?', ['inactive', req.params.id]);
     return res.json({ message: 'Course deactivated.' });
   } catch (error) {
+    console.error('[courseController.deleteCourse]', error.message);
     return res.status(500).json({ message: 'Could not delete course.' });
   }
 }
@@ -180,6 +185,7 @@ async function getMyCourses(req, res) {
 
     return res.json(courses);
   } catch (error) {
+    console.error('[courseController.getMyCourses]', error.message);
     return res.status(500).json({ message: 'Could not load teacher courses.' });
   }
 }
@@ -192,6 +198,7 @@ async function getCategories(req, res) {
     );
     return res.json(categories);
   } catch (error) {
+    console.error('[courseController.getCategories]', error.message);
     return res.status(500).json({ message: 'Could not load categories.' });
   }
 }

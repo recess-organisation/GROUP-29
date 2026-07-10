@@ -14,6 +14,7 @@ async function getStats(req, res) {
       submissions: submissions.total
     });
   } catch (error) {
+    console.error('[adminController.getStats]', error.message);
     return res.status(500).json({ message: 'Could not load statistics.' });
   }
 }
@@ -25,6 +26,7 @@ async function getUsers(req, res) {
     );
     return res.json(users);
   } catch (error) {
+    console.error('[adminController.getUsers]', error.message);
     return res.status(500).json({ message: 'Could not load users.' });
   }
 }
@@ -40,6 +42,7 @@ async function getCourses(req, res) {
     );
     return res.json(courses);
   } catch (error) {
+    console.error('[adminController.getCourses]', error.message);
     return res.status(500).json({ message: 'Could not load courses.' });
   }
 }
@@ -54,6 +57,7 @@ async function updateUserStatus(req, res) {
     await db.query('UPDATE users SET status = ? WHERE id = ?', [status, req.params.id]);
     return res.json({ message: 'User status updated.' });
   } catch (error) {
+    console.error('[adminController.updateUserStatus]', error.message);
     return res.status(500).json({ message: 'Could not update user status.' });
   }
 }
@@ -68,6 +72,7 @@ async function updateCourseStatus(req, res) {
     await db.query('UPDATE courses SET status = ? WHERE id = ?', [status, req.params.id]);
     return res.json({ message: 'Course status updated.' });
   } catch (error) {
+    console.error('[adminController.updateCourseStatus]', error.message);
     return res.status(500).json({ message: 'Could not update course status.' });
   }
 }
@@ -77,6 +82,7 @@ async function getCategories(req, res) {
     const categories = await db.query('SELECT * FROM course_categories ORDER BY name');
     return res.json(categories);
   } catch (error) {
+    console.error('[adminController.getCategories]', error.message);
     return res.status(500).json({ message: 'Could not load categories.' });
   }
 }
@@ -94,6 +100,7 @@ async function createCategory(req, res) {
     );
     return res.status(201).json({ message: 'Category created.', category_id: result.insertId });
   } catch (error) {
+    console.error('[adminController.createCategory]', error.message);
     return res.status(500).json({ message: 'Could not create category.' });
   }
 }
@@ -107,6 +114,7 @@ async function updateCategory(req, res) {
     );
     return res.json({ message: 'Category updated.' });
   } catch (error) {
+    console.error('[adminController.updateCategory]', error.message);
     return res.status(500).json({ message: 'Could not update category.' });
   }
 }

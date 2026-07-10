@@ -37,10 +37,23 @@ const allowedOrigins = (process.env.CORS_ORIGINS || process.env.FRONTEND_URL || 
 // Also allow any localhost or 127.0.0.1 origin regardless of port
 const localhostRegex = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
 
+// Allow Vercel deployment URLs (e.g. https://project.vercel.app)
+const vercelRegex = /^https:\/\/[a-zA-Z0-9_-]+\.vercel\.app$/;
+
 const corsOptions = {
   origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin) || localhostRegex.test(origin)) {
+    // Allow requests with no origin (server-to-server, curl, etc.),
+    // localhost origins, Vercel deployments, and explicitly allowed origins.
+    if (!origin || allowedOrigins.includes(origin) || localhostRegex.test(origin) || vercelRegex.test(origin)) {
       return callback(null, true);
+    }
+    // Also allow same-origin requests — compare Origin to the Host header
+    // This makes the API work with any custom domain without manual config
+    if (origin && this.req && this.req.headers && this.req.headers.host) {
+      const hostUrl = `${this.req.protocol || 'https'}://${this.req.headers.host}`;
+      if (origin === hostUrl) {
+        return callback(null, true);
+      }
     }
     return callback(new Error(`CORS blocked request from origin: ${origin}`));
   },

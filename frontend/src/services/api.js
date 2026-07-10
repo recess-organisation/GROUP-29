@@ -8,7 +8,7 @@ const isLocalhost = typeof window !== 'undefined' &&
   (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 
 // Use VITE_API_URL env var, or default to localhost for dev, or relative /api for production
-const apiUrl = import.meta.env.VITE_API_URL || (isLocalhost ? 'http://localhost:5000/api' : '/api');
+const apiUrl = import.meta.env.VITE_API_URL || (isLocalhost ? 'http://localhost:5001/api' : '/api');
 
 const api = axios.create({
   baseURL: apiUrl
@@ -22,5 +22,5 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-export const uploadsBaseUrl = import.meta.env.VITE_UPLOADS_URL || (isLocalhost ? 'http://localhost:5000' : '');
+export const uploadsBaseUrl = import.meta.env.VITE_UPLOADS_URL || (isLocalhost ? 'http://localhost:5001' : '');
 export default api;

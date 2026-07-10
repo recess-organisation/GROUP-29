@@ -33,6 +33,7 @@ async function createAssignment(req, res) {
 
     return res.status(201).json({ message: 'Assignment created.', assignment_id: result.insertId });
   } catch (error) {
+    console.error('[assignmentController.createAssignment]', error.message);
     return res.status(500).json({ message: 'Could not create assignment.' });
   }
 }
@@ -54,6 +55,7 @@ async function getAssignmentsByCourse(req, res) {
     );
     return res.json(assignments);
   } catch (error) {
+    console.error('[assignmentController.getAssignmentsByCourse]', error.message);
     return res.status(500).json({ message: 'Could not load assignments.' });
   }
 }
@@ -72,6 +74,7 @@ async function getAssignmentById(req, res) {
 
     return res.json(assignment);
   } catch (error) {
+    console.error('[assignmentController.getAssignmentById]', error.message);
     return res.status(500).json({ message: 'Could not load assignment.' });
   }
 }
@@ -106,6 +109,7 @@ async function updateAssignment(req, res) {
 
     return res.json({ message: 'Assignment updated.' });
   } catch (error) {
+    console.error('[assignmentController.updateAssignment]', error.message);
     return res.status(500).json({ message: 'Could not update assignment.' });
   }
 }
@@ -125,6 +129,7 @@ async function deleteAssignment(req, res) {
     await db.query('UPDATE assignments SET status = ? WHERE id = ?', ['inactive', req.params.id]);
     return res.json({ message: 'Assignment deactivated.' });
   } catch (error) {
+    console.error('[assignmentController.deleteAssignment]', error.message);
     return res.status(500).json({ message: 'Could not delete assignment.' });
   }
 }
